@@ -1,5 +1,8 @@
 #include "ball_list.h"
 
+
+
+
 BallNode* createNode(Ball ball) {
 
   BallNode *newnode = (BallNode*)malloc(sizeof(BallNode));
@@ -71,6 +74,61 @@ void moveBallList(BallNode* head, int maxX, int maxY) {
     BallNode* cur = head;
     while (cur != NULL) {
         moveBall(&cur->data, maxX, maxY);
+        cur = cur->next;
+    }
+}
+
+
+
+BallNode* deleteLastBall(BallNode** head, BallNode** tail) {
+    if (*head == NULL) return NULL;
+
+    BallNode* removed = NULL;
+
+    // 한 개만 있을 때
+    if (*head == *tail) {
+        removed = *head;
+        *head = NULL;
+        *tail = NULL;
+    } else {
+        BallNode* cur = *head;
+        while (cur->next != *tail) {
+            cur = cur->next;
+        }
+        removed = *tail;
+        cur->next = NULL;
+        *tail = cur;
+    }
+
+    printf("\n\033[1;36m [Success] '%d' Deleted successfully.\033[0m\n\n", removed->data.id);
+
+    free(removed);
+    return NULL;
+}
+
+void speedUpBalls(BallNode* head) {
+    BallNode* cur = head;
+    while (cur != NULL) {
+        cur->data.dx *= 2;
+        cur->data.dy *= 2;
+        cur = cur->next;
+    }
+}
+
+void slowDownBalls(BallNode* head) {
+    BallNode* cur = head;
+    while (cur != NULL) {
+        // 속도가 1보다 작아지면 멈추기 때문에 최소 1 유지
+        if (cur->data.dx > 0)
+            cur->data.dx = (cur->data.dx > 1) ? cur->data.dx / 2 : 1;
+        else if (cur->data.dx < 0)
+            cur->data.dx = (cur->data.dx < -1) ? cur->data.dx / 2 : -1;
+
+        if (cur->data.dy > 0)
+            cur->data.dy = (cur->data.dy > 1) ? cur->data.dy / 2 : 1;
+        else if (cur->data.dy < 0)
+            cur->data.dy = (cur->data.dy < -1) ? cur->data.dy / 2 : -1;
+
         cur = cur->next;
     }
 }

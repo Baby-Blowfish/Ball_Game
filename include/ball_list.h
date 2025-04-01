@@ -21,5 +21,10 @@ void drawBallList(dev_fb* fb, BallNode* head);
 
 void moveBallList(BallNode* head, int maxX, int maxY);
 
+BallNode* deleteLastBall(BallNode** head, BallNode** tail);
+
+void speedUpBalls(BallNode* head);
+
+void slowDownBalls(BallNode* head);
 
 #endif
