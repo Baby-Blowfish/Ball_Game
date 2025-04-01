@@ -22,6 +22,13 @@
 #define COLOR_BLUE    "\033[34m"
 #define COLOR_CYAN    "\033[36m"
 
+// 명령어 정의
+#define CMD_ADD 'a'
+#define CMD_DEL 'd'
+#define CMD_SPEED_UP 'w'
+#define CMD_SPEED_DOWN 's'
+#define CMD_EXIT 'x'
+
 #define CLIENT_NUM 1
 
 typedef unsigned char uchar;
