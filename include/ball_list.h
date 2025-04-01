@@ -11,6 +11,7 @@ typedef struct BallNode {
 
 
 
+
 BallNode* createNode(Ball ball);
 
 BallNode* appendBall(BallNode* head, BallNode** tail, Ball ball);
@@ -26,5 +27,7 @@ BallNode* deleteLastBall(BallNode** head, BallNode** tail);
 void speedUpBalls(BallNode* head);
 
 void slowDownBalls(BallNode* head);
+
+void freeBallList(BallNode** head);
 
 #endif

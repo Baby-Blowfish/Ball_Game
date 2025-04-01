@@ -11,6 +11,7 @@
 #include <sys/ioctl.h>
 #include <errno.h>
 #include <time.h>
+#include <pthread.h>
 
 #define FILE_NAME "data.bin"
 

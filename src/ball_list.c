@@ -11,7 +11,7 @@ BallNode* createNode(Ball ball) {
   }
 
   memset(newnode, 0, sizeof(BallNode));
-  
+
   newnode->data = ball;
   newnode->next = NULL;
 
@@ -21,7 +21,7 @@ BallNode* createNode(Ball ball) {
 BallNode* appendBall(BallNode* head, BallNode** tail, Ball ball)
 {
   BallNode* newnode = NULL;
-  if((newnode =createNode(ball)) == NULL) 
+  if((newnode =createNode(ball)) == NULL)
     perror("\n\033[31m[Error] Memory allocation failed\033[0m\n\n");
 
   if (head == NULL) {
@@ -52,8 +52,11 @@ void printInfoBall(BallNode *head)
     printf("\n................................... \n");
     while (cur)
     {
-        printf("ID: %d,  x : %d,  y : %d,  radius : %d,  RGB : (%d %d %d)\n",
-               cur->data.id, cur->data.x, cur->data.y, cur->data.radius, cur->data.color.r,cur->data.color.g,cur->data.color.b);
+        printf("ID: %d,  x : %d,  y : %d, dx : %d, dy : %d, RGB : (%d, %d, %d)\n",
+               cur->data.id, cur->data.x, cur->data.y,
+               cur->data.dx, cur->data.dy,
+               cur->data.color.r, cur->data.color.g, cur->data.color.b);
+
         cur = cur->next;
 
 
@@ -131,4 +134,14 @@ void slowDownBalls(BallNode* head) {
 
         cur = cur->next;
     }
+}
+
+void freeBallList(BallNode** head) {
+    BallNode* cur = *head;
+    while (cur != NULL) {
+        BallNode* tmp = cur;
+        cur = cur->next;
+        free(tmp);
+    }
+    *head = NULL;
 }

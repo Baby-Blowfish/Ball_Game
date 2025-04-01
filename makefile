@@ -1,6 +1,7 @@
 # ===== 기본 설정 =====
 CC      = gcc
-CFLAGS  = -Wall -Wextra -g -Iinclude -MMD -MP
+CFLAGS  = -Wall -Wextra -g -Iinclude -MMD -MP -pthread
+LDFLAGS = -lpthread
 
 SRC_DIR = src
 INC_DIR = include
@@ -26,7 +27,7 @@ $(BIN_DIR) $(OBJ_DIR):
 
 # 실행파일 생성
 $(TARGET): $(OBJS)
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 # .c → .o 규칙
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
