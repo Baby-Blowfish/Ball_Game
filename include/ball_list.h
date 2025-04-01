@@ -19,5 +19,7 @@ void printInfoBall(BallNode *head);
 
 void drawBallList(dev_fb* fb, BallNode* head);
 
+void moveBallList(BallNode* head, int maxX, int maxY);
+
 
 #endif

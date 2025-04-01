@@ -66,3 +66,11 @@ void drawBallList(dev_fb* fb, BallNode* head) {
         cur = cur->next;
     }
 }
+
+void moveBallList(BallNode* head, int maxX, int maxY) {
+    BallNode* cur = head;
+    while (cur != NULL) {
+        moveBall(&cur->data, maxX, maxY);
+        cur = cur->next;
+    }
+}

@@ -32,9 +32,16 @@ void moveBall(Ball* b, int maxX, int maxY) {
     b->x += b->dx;
     b->y += b->dy;
 
-    if (b->x <= 0 || b->x >= (maxX - b->radius))
+    // 좌우 벽에 닿으면 방향 반전
+    if (b->x <= b->radius || b->x >= (maxX - b->radius)) {
         b->dx *= -1;
-    if (b->y <= 0 || b->y >= (maxY - b->radius))
+        b->x += b->dx; // 튕긴 뒤 한 칸 이동해줌
+    }
+
+    // 상하 벽에 닿으면 방향 반전
+    if (b->y <= b->radius || b->y >= (maxY - b->radius)) {
         b->dy *= -1;
+        b->y += b->dy;
+    }
 }
 

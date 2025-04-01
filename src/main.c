@@ -35,9 +35,14 @@ int main(int argc, char **argv)
 
   printInfoBall(ballListHead);
 
-  fb_fillScr(&fb, 0, 0, 0); // 전체 검정으로 클리어
-  drawBallList(&fb, ballListHead);
+  while (1) {
+      fb_fillScr(&fb, 0, 0, 0); // 화면 초기화
 
+      moveBallList(ballListHead, fb.vinfo.xres, fb.vinfo.yres);
+      drawBallList(&fb, ballListHead);
+
+      usleep(1000000 / 60); // 60 FPS
+  }
 
 	// 프레임 버퍼 장치 닫기
 	close(fb.fbfd);
