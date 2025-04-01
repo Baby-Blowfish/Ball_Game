@@ -53,52 +53,59 @@ int main(int argc, char **argv)
 
   printInfoBall(ballListHead);
 
-  // while (1) {
-  //     fb_fillScr(&fb, 0, 0, 0); // 화면 초기화
+  int speed_flag = 5;
 
-  //     moveBallList(ballListHead, fb.vinfo.xres, fb.vinfo.yres);
-  //     drawBallList(&fb, ballListHead);
+  while (1) {
+      fb_fillScr(&fb, 0, 0, 0); // 화면 초기화
 
-  //     usleep(1000000 / 60); // 60 FPS
-  // }
+      moveBallList(ballListHead, fb.vinfo.xres, fb.vinfo.yres);
+      drawBallList(&fb, ballListHead);
+
+      if(speed_flag > 0) speedUpBalls(ballListHead);
+      speed_flag--;
+      usleep(1000000 / 60); // 60 FPS
+  }
 
 // 사용자 입력 시뮬레이션
 
-strcpy(input, "a:3");
+// strcpy(input, "a:3");
 
-cmd = parseCommand(input, &count);
+// cmd = parseCommand(input, &count);
 
-if (cmd == 'a') {
-    for (int i = 0; i < count; i++) {
-        Ball b = createBall(ball_count++, fb.vinfo.xres, fb.vinfo.yres, 20);
-        ballListHead = appendBall(ballListHead, &ballListTail, b);
-    }
-} else if (cmd == 'd') {
-    for (int i = 0; i < count; i++) {
-      ball_count--;
-      deleteLastBall(&ballListHead, &ballListTail); // 뒤에서 삭제하는 함수 
-    }
-}
+// if (cmd == 'a') {
+//     for (int i = 0; i < count; i++) {
+//         Ball b = createBall(ball_count++, fb.vinfo.xres, fb.vinfo.yres, 20);
+//         ballListHead = appendBall(ballListHead, &ballListTail, b);
+//     }
+// } else if (cmd == 'd') {
+//     for (int i = 0; i < count; i++) {
+//       ball_count--;
+//       deleteLastBall(&ballListHead, &ballListTail); // 뒤에서 삭제하는 함수 
+//     }
+// }
 
-printInfoBall(ballListHead);
+// printInfoBall(ballListHead);
 
-strcpy(input, "d:2");
+// strcpy(input, "d:2");
 
-cmd = parseCommand(input, &count);
+// cmd = parseCommand(input, &count);
 
-if (cmd == 'a') {
-    for (int i = 0; i < count; i++) {
-        Ball b = createBall(ball_count++, fb.vinfo.xres, fb.vinfo.yres, 20);
-        ballListHead = appendBall(ballListHead, &ballListTail, b);
-    }
-} else if (cmd == 'd') {
-    for (int i = 0; i < count; i++) {
-      ball_count--;
-      deleteLastBall(&ballListHead, &ballListTail); // 뒤에서 삭제하는 함수 
-    }
-}
+// if (cmd == 'a') {
+//     for (int i = 0; i < count; i++) {
+//         Ball b = createBall(ball_count++, fb.vinfo.xres, fb.vinfo.yres, 20);
+//         ballListHead = appendBall(ballListHead, &ballListTail, b);
+//     }
+// } else if (cmd == 'd') {
+//     for (int i = 0; i < count; i++) {
+//       ball_count--;
+//       deleteLastBall(&ballListHead, &ballListTail); // 뒤에서 삭제하는 함수 
+//     }
+// }
 
-printInfoBall(ballListHead);
+// printInfoBall(ballListHead);
+
+
+
 	// 프레임 버퍼 장치 닫기
 	close(fb.fbfd);
 
