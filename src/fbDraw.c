@@ -1,30 +1,35 @@
-#include <stdio.h>
 #include "fbDraw.h"
 
-dev_fb fb;
- 
 int fb_init(dev_fb* fb)
 {
 	fb->fbfd=0;
 	fb->fbp=NULL;
-	fb->fbfd=open("/dev/fb0", O_RDWR);
+	fb->fbfd=open(FBDEVICE, O_RDWR);
 
 	if(fb->fbfd==-1)
 		return FB_OPEN_FAIL;
-	if(ioctl(fb->fbfd, FBIOGET_FSCREENINFO, &(fb->finfo))==-1)
+	if(ioctl(fb->fbfd, FBIOGET_FSCREENINFO, &(fb->finfo)) < 0)
 		return FB_GET_FINFO_FAIL;
-	if(ioctl(fb->fbfd, FBIOGET_VSCREENINFO, &(fb->vinfo))==-1)
+	if(ioctl(fb->fbfd, FBIOGET_VSCREENINFO, &(fb->vinfo)) < 0)
 		return FB_GET_VINFO_FAIL;
+
+	// 현재 프레임 버퍼의 해상도 및 색상 깊이 정보 출력
+	printf("Resolution : %dx%d, %dbpp\n", fb->vinfo.xres, fb->vinfo.yres, fb->vinfo.bits_per_pixel);
+	printf("Virtual Resolution : %dx%d\n", fb->vinfo.xres_virtual, fb->vinfo.yres_virtual);
+
+	// 각 색상 채널의 오프셋과 길이 출력
+	printf("Red: offset = %d, length = %d\n", fb->vinfo.red.offset, fb->vinfo.red.length);
+	printf("Green: offset = %d, length = %d\n", fb->vinfo.green.offset, fb->vinfo.green.length);
+	printf("Blue: offset = %d, length = %d\n", fb->vinfo.blue.offset, fb->vinfo.blue.length);
+	printf("Alpha (transparency): offset = %d, length = %d\n", fb->vinfo.transp.offset, fb->vinfo.transp.length);
 
 	fb->screensize=fb->vinfo.xres * fb->vinfo.yres * fb->vinfo.bits_per_pixel / 8;
 
-	fb->fbp=(char*)mmap(0,fb->screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fb->fbfd, 0);
+	fb->fbp = (ubyte*)mmap(NULL,fb->screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fb->fbfd, 0);
 	if(fb->fbp==MAP_FAILED) {
 		fb->fbp = NULL;
 		return FB_MMAP_FAIL;
 	}
-
-	fprintf( stderr, "[FB] %d x %d\n", (int)fb->vinfo.xres, (int)fb->vinfo.yres );
 
 	return 0;
 }
@@ -36,6 +41,7 @@ pixel fb_toPixel(int x, int y)
 	px.y=y;
 	return px;
 }
+
 //전달 받은 좌표가 프래임버퍼가 출력할 수 있는 영역내에 있는지 확인하기 위한 함수
 int fb_checkPx(dev_fb* fb, int x, int y)
 {

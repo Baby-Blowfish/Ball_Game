@@ -1,17 +1,38 @@
 #ifndef __FBDRAW_H__
 #define __FBDRAW_H__
 
-#include"common.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+#include <linux/fb.h>
+#include <sys/mman.h>
+#include <sys/ioctl.h>
 
 #define FB_OPEN_FAIL 1
 #define FB_GET_FINFO_FAIL 2
 #define FB_GET_VINFO_FAIL 3
 #define FB_MMAP_FAIL 4
 #define RADIUS 20
+#define FBDEVICE "/dev/fb0"  // 프레임 버퍼 장치의 경로
 
-typedef unsigned char uchar;
+typedef unsigned char ubyte;
 
-extern dev_fb fb;
+typedef struct dev_fb_t
+{
+	int fbfd;
+	struct fb_var_screeninfo vinfo;
+	struct fb_fix_screeninfo finfo;
+	long int screensize;
+	ubyte *fbp;
+}dev_fb;
+
+typedef struct pixel_t
+{
+	int x;
+	int y;
+}pixel;
 
 //프래임 버퍼에 접근하고 초기화하는 함수
 int fb_init(dev_fb* fb);
