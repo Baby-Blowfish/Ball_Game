@@ -6,48 +6,37 @@
 #include <sys/mman.h>
 
 #include "fbDraw.h"
-
+#include "ball.h"
+#include "ball_list.h"
 
 int main(int argc, char **argv)
 {
-  dev_fb  fb;
 
-  switch (fb_init(&fb))
+  dev_fb fb;
+
+  srand(time(NULL)); // randDir() 사용을 위한 초기화
+
+  if(fb_init(&fb) > 0)
   {
-    case FB_OPEN_FAIL :
-    case FB_GET_FINFO_FAIL :
-    case FB_GET_VINFO_FAIL :
-    case FB_MMAP_FAIL :
-      perror("framebuffer");
-      return 1;
-      break;
-    default:
-      break;
+    perror("framebuffer init failed");
+    return -1;
   }
 
-  // 전체 화면 검정색으로 채우기
-  fb_fillScr(&fb, 0, 0, 0);
-  sleep(1);
+  BallNode* ballListHead = NULL;
+  BallNode* ballListTail = NULL;
 
-  // 중심에 빨간 원 그리기
-  pixel center = fb_toPixel(fb.vinfo.xres / 2, fb.vinfo.yres / 2);
-  fb_drawFilledCircle(&fb, center, 255, 0, 0);
-  sleep(1);
+  //head = loadBall(&tail, FILE_NAME);
 
-  // 좌측 상단에 하얀 사각형
-  pixel topLeft = fb_toPixel(50, 50);
-  fb_drawBox(&fb, topLeft, 100, 50, 255, 255, 255);
-  sleep(1);
+  // 공 5개 생성해서 리스트에 추가
+  for (int i = 0; i < 5; i++) {
+    Ball b = createBall(i, fb.vinfo.xres, fb.vinfo.yres ,20);
+    ballListHead = appendBall(ballListHead, &ballListTail ,b);
+  }
 
-  // 한글자 출력 (숫자/영문/기호 한정)
-  pixel textPos = fb_toPixel(100, 150);
-  fb_drawChar(&fb, 'A', textPos, 30, 0, 255, 0);
-  sleep(1);
+  printInfoBall(ballListHead);
 
-  // 문자열 출력
-  pixel strCursor = fb_toPixel(100, 200);
-  fb_printStr(&fb, "HELLO", &strCursor, 30, 255, 255, 0);
-  sleep(3);
+  fb_fillScr(&fb, 0, 0, 0); // 전체 검정으로 클리어
+  drawBallList(&fb, ballListHead);
 
 
 	// 프레임 버퍼 장치 닫기
