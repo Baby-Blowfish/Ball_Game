@@ -1,8 +1,6 @@
-obj/shared/ball.o: src/shared/ball.c include/ball.h include/common.h \
- include/fbDraw.h
+obj/shared/ball.o: src/shared/ball.c include/ball.h \
+ include/console_color.h
 
 include/ball.h:
 
-include/common.h:
-
-include/fbDraw.h:
+include/console_color.h:

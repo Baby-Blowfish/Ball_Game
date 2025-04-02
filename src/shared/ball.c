@@ -1,9 +1,9 @@
 #include "ball.h"
 
 
-Ball createBall(int id, int maxX, int maxY, int radius) {
+BallObject createBall(int id, int maxX, int maxY, int radius) {
     
-    Ball b;
+    BallObject b;
     b.id = id;
 
     // 경계를 벗어나지 않는 범위 내에서 랜덤 위치 생성
@@ -22,13 +22,8 @@ Ball createBall(int id, int maxX, int maxY, int radius) {
     return b;
 }
 
-void drawBall(dev_fb* fb, Ball* b) {
-    pixel center = fb_toPixel(b->x, b->y);
-    fb_drawFilledCircle(fb, center, b->color.r, b->color.g, b->color.b);
-}
 
-
-void moveBall(Ball* b, int maxX, int maxY) {
+void moveBall(BallObject* b, int maxX, int maxY) {
     b->x += b->dx;
     b->y += b->dy;
 
