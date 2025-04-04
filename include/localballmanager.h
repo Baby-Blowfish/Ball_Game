@@ -42,6 +42,14 @@ typedef struct {
     int total_count;     ///< 현재 리스트에 존재하는 공의 총 개수
 } BallListManager;
 
+// 테이블 매핑
+typedef void (*CommandHandler)(BallListManager*, int, int);
+
+typedef struct {
+    char cmd;
+    CommandHandler handler;
+} CommandEntry;
+
 void ball_manager_init(BallListManager* manager);
 
 void ball_manager_destroy(BallListManager* manager);
@@ -53,6 +61,22 @@ void delete_ball(BallListManager* manager, int count);
 void move_all_ball(BallListManager* manager);
 
 char* serialize_ball_list(BallListManager* manager); // 문자열 전송용
+
+// 핸들러 함수 정의
+void handle_add(BallListManager* m, int count, int radius);
+
+void handle_delete(BallListManager* m, int count, int radius);
+
+void handle_speed_up(BallListManager* m, int count, int radius);
+
+void handle_speed_down(BallListManager* m, int count, int radius);
+
+static CommandEntry command_table[] = {
+    {CMD_ADD, handle_add},
+    {CMD_DEL, handle_delete},
+    {CMD_SPEED_UP, handle_speed_up},
+    {CMD_SPEED_DOWN, handle_speed_down}
+};
 
 void dispatch_command(char cmd, int count, int radius, BallListManager* m);
 

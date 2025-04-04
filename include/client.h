@@ -7,7 +7,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <pthread.h>
-#include "client_ball_manager.h"
+#include "screenballmanager.h"
 
 
 #define SERVER_PORT 5100

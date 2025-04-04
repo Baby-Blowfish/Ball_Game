@@ -13,7 +13,6 @@
 #include <time.h>
 #include <pthread.h>
 
-#include "console_color.h"
 #include "fbDraw.h"
 #include "screenball_list.h"
 

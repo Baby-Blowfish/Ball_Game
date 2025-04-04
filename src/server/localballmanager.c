@@ -58,29 +58,10 @@ char* serialize_ball_list(BallListManager* manager) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // 핸들러 함수 정의
 void handle_add(BallListManager* m, int count, int radius) {
     if (count <= 0) count = 1;
-    for (int i = 0; i < count; i++) {
-        LogicalBall b = create_logical_ball(m->total_count++, radius);
-        m->head = appendBall(m->head, &m->tail, b);
-    }
+    add_ball(m,count,radius);
 }
 
 void handle_delete(BallListManager* m, int count, int radius) {
@@ -95,21 +76,6 @@ void handle_speed_up(BallListManager* m, int count, int radius) {
 void handle_speed_down(BallListManager* m, int count, int radius) {
     slowDownBalls(m->head);
 }
-
-// 테이블 매핑
-typedef void (*CommandHandler)(BallListManager*, int, int);
-
-typedef struct {
-    char cmd;
-    CommandHandler handler;
-} CommandEntry;
-
-static CommandEntry command_table[] = {
-    {'a', handle_add},
-    {'d', handle_delete},
-    {'w', handle_speed_up},
-    {'s', handle_speed_down}
-};
 
 void dispatch_command(char cmd, int count, int radius, BallListManager* m) {
     for (size_t i = 0; i < sizeof(command_table)/sizeof(CommandEntry); ++i) {
