@@ -1,9 +1,8 @@
-#include "ball.h"
+#include "screenball.h"
 
-
-BallObject createBall(int id, int width, int height, int radius) {
+ScreenBall create_screen_ball(int id, int width, int height, int radius) {
     
-    BallObject b;
+    ScreenBall b;
     b.id = id;
     b.radius = radius;
 
@@ -22,7 +21,7 @@ BallObject createBall(int id, int width, int height, int radius) {
 }
 
 
-void moveBall(BallObject* b, int width, int height) {
+void move_screen_ball(ScreenBall* b, int width, int height) {
     b->x += b->dx;
     b->y += b->dy;
 

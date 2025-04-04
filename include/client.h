@@ -9,6 +9,13 @@
 #include <pthread.h>
 #include "client_ball_manager.h"
 
+
+#define SERVER_PORT 5100
+#define MAX_CLIENTS 10
+#define MAX_INPUT 100
+#define RADIUS 20
+#define START_BALL_COUNT 5
+
 /**
  * @brief 소켓 통신 상태를 관리하는 구조체
  */
@@ -55,4 +62,5 @@ void ball_client_arg_destroy(GameSharedContext* arg);
 void* socket_recv_echo_thread(void* arg);
 void* socket_send_echo_thread(void* arg);
 
+void parse_and_draw_balls(const char* recv_buf, dev_fb* fb);
 #endif

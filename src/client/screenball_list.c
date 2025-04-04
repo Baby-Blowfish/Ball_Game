@@ -1,7 +1,7 @@
-#include "ball_list.h"
+#include "screenball_list.h"
 
 
-BallListNode* createNode(BallObject ball) {
+BallListNode* createNode(ScreenBall ball) {
 
   BallListNode *newnode = (BallListNode*)malloc(sizeof(BallListNode));
   if (!newnode) {
@@ -16,11 +16,11 @@ BallListNode* createNode(BallObject ball) {
     return newnode;
 }
 
-BallListNode* appendBall(BallListNode* head, BallListNode** tail, BallObject ball)
+BallListNode* appendBall(BallListNode* head, BallListNode** tail, ScreenBall ball)
 {
   BallListNode* newnode = NULL;
   if((newnode =createNode(ball)) == NULL)
-    perror("\n\033[31m[Error] Memory allocation failed\033[0m\n\n");
+    perror(COLOR_RED "[Error] Memory allocation failed" COLOR_RESET);
 
   if (head == NULL) {
     head = newnode;
@@ -30,8 +30,7 @@ BallListNode* appendBall(BallListNode* head, BallListNode** tail, BallObject bal
     *tail = newnode;
   }
 
-  printf("\n\033[1;36m [Success] '%d' added successfully.\033[0m\n\n", ball.id);
-
+  printf(COLOR_GREEN "[Success] '%d' added successfully." COLOR_RESET, ball.id);
   return head;
 
 }
@@ -65,7 +64,7 @@ BallListNode* deleteLastBall(BallListNode** head, BallListNode** tail) {
         *tail = cur;
     }
 
-    printf("\n\033[1;36m [Success] '%d' Deleted successfully.\033[0m\n\n", removed->data.id);
+    printf(COLOR_GREEN "[Success] '%d' Deleted successfully." COLOR_RESET, removed->data.id);
 
     free(removed);
     return NULL;

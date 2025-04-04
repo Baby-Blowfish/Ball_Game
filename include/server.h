@@ -7,10 +7,12 @@
 #include <unistd.h>
 #include <signal.h>
 
-#include "server_ball_manager.h"
+#include "localballmanager.h"
 #include "client_list_manager.h"
 #include "task.h"
 
+#define SERVER_PORT 5100
+#define MAX_INPUT 100
 
 /**
  * @brief 게임 전체에서 공유되는 전역 상태 컨텍스트 구조체

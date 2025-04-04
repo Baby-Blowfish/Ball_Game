@@ -233,3 +233,39 @@ void ball_client_arg_destroy(GameSharedContext* arg) {
 
     free(arg);
 }
+
+
+void parse_and_draw_balls(const char* recv_buf, dev_fb* fb) {
+    char buffer[8192];
+    strncpy(buffer, recv_buf, sizeof(buffer));
+    buffer[sizeof(buffer)-1] = '\0'; // 안전한 널 종료
+
+    char* token = strtok(buffer, "|");
+
+    while (token != NULL) {
+        int id, radius, r, g, b;
+        float x, y, dx, dy;
+
+        // 문자열에서 데이터 추출
+        if (sscanf(token, "%d,%f,%f,%f,%f,%d,%d,%d,%d",
+                   &id, &x, &y, &dx, &dy, &radius, &r, &g, &b) == 9) {
+
+            // 논리좌표 → 픽셀좌표 변환
+            ScreenBall sb;
+            sb.id = id;
+            sb.x = (int)(x / 1000.0f * fb->vinfo.xres);  // 정규화된 좌표 → 픽셀 변환
+            sb.y = (int)(y / 1000.0f * fb->vinfo.yres);
+            sb.dx = (int)(dx); // 클라이언트에선 필요 없으면 생략 가능
+            sb.dy = (int)(dy);
+            sb.radius = (int)(radius / 1000.0f * fb->vinfo.xres); // 반지름도 변환
+            sb.color.r = r;
+            sb.color.g = g;
+            sb.color.b = b;
+
+            // 출력
+            drawBall(fb, &sb);
+        }
+
+        token = strtok(NULL, "|");
+    }
+}

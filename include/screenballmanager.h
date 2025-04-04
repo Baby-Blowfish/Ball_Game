@@ -1,5 +1,5 @@
-#ifndef SERVER_BALL_MANAGER_H
-#define SERVER_BALL_MANAGER_H
+#ifndef SCREEN_BALL_MANAGER_H
+#define SCREEN_BALL_MANAGER_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,7 +15,8 @@
 
 #include "console_color.h"
 #include "fbDraw.h"
-#include "ball_list.h"
+#include "screenball_list.h"
+
 
 #define FILE_NAME "data.bin"
 
@@ -26,17 +27,10 @@
 #define CMD_SPEED_DOWN 's'
 #define CMD_EXIT 'x'
 
-#define SERVER_PORT 5100
-#define MAX_INPUT 100
-#define RADIUS 20
-#define START_BALL_COUNT 5
 
 typedef unsigned char uchar;
 
 
-/**
- * @brief 공 리스트 전체를 관리하는 매니저 구조체
- */
 typedef struct {
     BallListNode* head;  ///< 공 리스트의 시작 노드
     BallListNode* tail;  ///< 공 리스트의 마지막 노드
@@ -45,25 +39,21 @@ typedef struct {
 } BallListManager;
 
 
-void drawBall(dev_fb* fb, BallObject* b);
+void drawBall(dev_fb* fb, ScreenBall* b);
 
 void drawBallList(dev_fb* fb, BallListNode* head);
 
+void ball_manager_init(BallListManager* manager);
 
-void move_all(dev_fb* fb, BallListManager* manager);
-
-void server_ball_manager_init(BallListManager* manager);
-
-void server_ball_manager_destroy(BallListManager* manager);
+void ball_manager_destroy(BallListManager* manager);
 
 void add_ball(BallListManager* manager, int count, int width, int height,int radius);
 
 void delete_ball(BallListManager* manager, int count);
 
+void move_all_ball(dev_fb* fb, BallListManager* manager);
 
-char* serialize_ball_list(BallListManager* manager, int count, int width, int height); // 문자열 전송용
-
-void dispatch_command(char cmd, int count, int width, int height,int radius, BallListManager* m);
+BallListNode* deserialize_ball_list(const char* str);
 
 
-#endif // COMMON_H
+#endif // SCREEN_BALL_MANAGER_H

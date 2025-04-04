@@ -1,5 +1,5 @@
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef LOCAL_BALL_MANAGER_H
+#define LOCAL_BALL_MANAGER_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,9 +14,7 @@
 #include <pthread.h>
 
 #include "console_color.h"
-#include "fbDraw.h"
-#include "ball_list.h"
-
+#include "localball_list.h"
 
 #define FILE_NAME "data.bin"
 
@@ -27,11 +25,9 @@
 #define CMD_SPEED_DOWN 's'
 #define CMD_EXIT 'x'
 
-#define SERVER_PORT 5100
-#define MAX_CLIENTS 10
-#define MAX_INPUT 100
-#define RADIUS 20
+// init 시 생성할 볼 속성
 #define START_BALL_COUNT 5
+#define START_BALL_RADIUS 20
 
 typedef unsigned char uchar;
 
@@ -42,30 +38,23 @@ typedef unsigned char uchar;
 typedef struct {
     BallListNode* head;  ///< 공 리스트의 시작 노드
     BallListNode* tail;  ///< 공 리스트의 마지막 노드
-    int flag_add_remove;
-    int flag_speed_change;
     pthread_mutex_t mutex_ball; ///< 공 리스트 전체에 대한 동기화를 위한 뮤텍스
     int total_count;     ///< 현재 리스트에 존재하는 공의 총 개수
 } BallListManager;
 
+void ball_manager_init(BallListManager* manager);
 
+void ball_manager_destroy(BallListManager* manager);
 
-void drawBall(dev_fb* fb, BallObject* b);
-
-void drawBallList(dev_fb* fb, BallListNode* head);
-
-
-void move_all(dev_fb* fb, BallListManager* manager);
-
-void server_ball_manager_init(BallListManager* manager);
-
-void server_ball_manager_destroy(BallListManager* manager);
-
-void add_ball(BallListManager* manager, int count, int width, int height,int radius);
+void add_ball(BallListManager* manager, int count, int radius);
 
 void delete_ball(BallListManager* manager, int count);
 
-BallListNode* deserialize_ball_list(const char* str);
+void move_all_ball(BallListManager* manager);
+
+char* serialize_ball_list(BallListManager* manager); // 문자열 전송용
+
+void dispatch_command(char cmd, int count, int radius, BallListManager* m);
 
 
-#endif // COMMON_H
+#endif // LOCAL_BALL_MANAGER_H

@@ -2,6 +2,10 @@
   "ros.distro": "noetic",
   "files.associations": {
     "thread": "c",
-    "tuple": "c"
+    "tuple": "c",
+    "random": "c",
+    "screenball_list.h": "c",
+    "localballmanager.h": "c",
+    "screenballmanager.h": "c"
   }
 }
