@@ -29,6 +29,8 @@ int main(void)
     struct sockaddr_in servaddr, cliaddr;
     socklen_t clen = sizeof(cliaddr);
     pthread_t workers[NUM_WORKERS];  // woker Pool 생성
+    pthread_t cycle_broadcast_id;
+    
 
     signal(SIGINT, handle_sigint); // graceful shutdown 지원
 
@@ -89,6 +91,8 @@ int main(void)
     ev.data.fd = ssock;
     epoll_ctl(epfd, EPOLL_CTL_ADD, ssock, &ev);
     arg->epoll_fd = epfd;
+
+    pthread_create(&cycle_broadcast_id, NULL, cycle_broadcast_ball_state, (void*)arg);
 
     printf(COLOR_BLUE "[Server] Listening on port %d..."COLOR_RESET, SERVER_PORT);
 
@@ -164,7 +168,7 @@ int main(void)
     for (int i = 0; i < NUM_WORKERS; ++i) {
         pthread_join(workers[i], NULL);
     }
-
+    pthread_join(cycle_broadcast_id, NULL);
     manager_destroy(arg);
 
     return 0;

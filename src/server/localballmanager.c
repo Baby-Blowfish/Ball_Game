@@ -65,17 +65,29 @@ void handle_add(BallListManager* m, int count, int radius) {
 }
 
 void handle_delete(BallListManager* m, int count, int radius) {
+    (void)radius;
     if (count <= 0) count = 1;
     delete_ball(m, count);
 }
 
 void handle_speed_up(BallListManager* m, int count, int radius) {
+    (void)count;
+    (void)radius;
     speedUpBalls(m->head);
 }
 
 void handle_speed_down(BallListManager* m, int count, int radius) {
+    (void)count;
+    (void)radius;
     slowDownBalls(m->head);
 }
+
+CommandEntry command_table[] = {
+    {CMD_ADD, handle_add},
+    {CMD_DEL, handle_delete},
+    {CMD_SPEED_UP, handle_speed_up},
+    {CMD_SPEED_DOWN, handle_speed_down}
+};
 
 void dispatch_command(char cmd, int count, int radius, BallListManager* m) {
     for (size_t i = 0; i < sizeof(command_table)/sizeof(CommandEntry); ++i) {

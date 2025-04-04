@@ -28,10 +28,6 @@
 // init 시 생성할 볼 속성
 #define START_BALL_COUNT 5
 #define START_BALL_RADIUS 20
-
-typedef unsigned char uchar;
-
-
 /**
  * @brief 공 리스트 전체를 관리하는 매니저 구조체
  */
@@ -42,13 +38,18 @@ typedef struct {
     int total_count;     ///< 현재 리스트에 존재하는 공의 총 개수
 } BallListManager;
 
-// 테이블 매핑
-typedef void (*CommandHandler)(BallListManager*, int, int);
+typedef void (*CommandHandler)(BallListManager*, int, int); // 테이블 매핑
 
 typedef struct {
     char cmd;
     CommandHandler handler;
 } CommandEntry;
+
+typedef unsigned char uchar;
+
+extern CommandEntry command_table[];
+
+
 
 void ball_manager_init(BallListManager* manager);
 
@@ -70,13 +71,6 @@ void handle_delete(BallListManager* m, int count, int radius);
 void handle_speed_up(BallListManager* m, int count, int radius);
 
 void handle_speed_down(BallListManager* m, int count, int radius);
-
-static CommandEntry command_table[] = {
-    {CMD_ADD, handle_add},
-    {CMD_DEL, handle_delete},
-    {CMD_SPEED_UP, handle_speed_up},
-    {CMD_SPEED_DOWN, handle_speed_down}
-};
 
 void dispatch_command(char cmd, int count, int radius, BallListManager* m);
 

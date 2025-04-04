@@ -74,7 +74,7 @@ void broadcast_ball_state(ClientListManager* client_mgr, BallListManager* ball_m
     pthread_mutex_unlock(&ball_mgr->mutex_ball);
 
     if(!buffer) return;
-
+    
     pthread_mutex_lock(&client_mgr->mutex_client);
     ClientNode* curr = client_mgr->head;
     while (curr) {
@@ -153,5 +153,15 @@ void* worker_thread(void* arg) {
 
     }
 
+    return NULL;
+}
+
+void* cycle_broadcast_ball_state(void* arg) {
+    SharedContext* ctx = (SharedContext*)arg;
+
+    while (keep_running) {
+        usleep(30000); // 약 33 FPS
+        broadcast_ball_state(ctx->client_list_manager, ctx->ball_list_manager);
+    }
     return NULL;
 }

@@ -44,5 +44,7 @@ void broadcast_ball_state(ClientListManager* client_mgr, BallListManager* ball_m
 
 void* worker_thread(void* arg);
 
+void* cycle_broadcast_ball_state(void* arg);
+
 
 #endif
