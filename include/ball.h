@@ -42,14 +42,14 @@ typedef struct {
 // @param dy 이동 방향 y
 // @param radius 반지름
 // @param color 색상
-BallObject createBall(int id, int maxX, int maxY, int radius);
+BallObject createBall(int id, int width, int height, int radius);
 
 // @brief Ball을 이동시키는 함수
 // @param b 이동시킬 Ball (참조)
 // @param maxX 화면의 최대 너비
 // @param maxY 화면의 최대 높이
 
-void moveBall(BallObject *b, int maxX, int maxY);
+void moveBall(BallObject *b, int width, int height);
 
 
 #endif // BALL_H

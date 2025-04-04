@@ -17,7 +17,7 @@ BallListNode* appendBall(BallListNode* head, BallListNode** tail, BallObject bal
 
 void printInfoBall(BallListNode *head);
 
-void moveBallList(BallListNode* head, int maxX, int maxY);
+void moveBallList(BallListNode* head, int width, int height);
 
 BallListNode* deleteLastBall(BallListNode** head, BallListNode** tail);
 

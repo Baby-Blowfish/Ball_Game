@@ -36,45 +36,13 @@ BallListNode* appendBall(BallListNode* head, BallListNode** tail, BallObject bal
 
 }
 
-
-void printInfoBall(BallListNode *head)
-{
-    int i = 0;
-
-    if (!head)
-    {
-        printf(COLOR_YELLOW "\nNo data available.\n\n" COLOR_RESET);
-        return;
-    }
-
-    BallListNode *cur = head;
-
-    printf("\n................................... \n");
-    while (cur)
-    {
-        printf("ID: %d,  x : %d,  y : %d, dx : %d, dy : %d, RGB : (%d, %d, %d)\n",
-               cur->data.id, cur->data.x, cur->data.y,
-               cur->data.dx, cur->data.dy,
-               cur->data.color.r, cur->data.color.g, cur->data.color.b);
-
-        cur = cur->next;
-        i++;
-    }
-    printf("\ntotal : %d\n",i);
-    printf("................................... \n\n");
-}
-
-
-
-
-void moveBallList(BallListNode* head, int maxX, int maxY) {
+void moveBallList(BallListNode* head, int width, int height) {
     BallListNode* cur = head;
     while (cur != NULL) {
-        moveBall(&cur->data, maxX, maxY);
+        moveBall(&cur->data, width, height);
         cur = cur->next;
     }
 }
-
 
 
 BallListNode* deleteLastBall(BallListNode** head, BallListNode** tail) {
@@ -138,4 +106,33 @@ void freeBallList(BallListNode** head) {
         free(tmp);
     }
     *head = NULL;
+    printf(COLOR_GREEN "Freed memory of the ball linked list." COLOR_RESET);
+}
+
+
+void printInfoBall(BallListNode *head)
+{
+    int i = 0;
+
+    if (!head)
+    {
+        printf(COLOR_YELLOW "\nNo data available.\n\n" COLOR_RESET);
+        return;
+    }
+
+    BallListNode *cur = head;
+
+    printf("\n................................... \n");
+    while (cur)
+    {
+        printf("ID: %d,  x : %d,  y : %d, dx : %d, dy : %d, RGB : (%d, %d, %d)\n",
+               cur->data.id, cur->data.x, cur->data.y,
+               cur->data.dx, cur->data.dy,
+               cur->data.color.r, cur->data.color.g, cur->data.color.b);
+
+        cur = cur->next;
+        i++;
+    }
+    printf("\ntotal : %d\n",i);
+    printf("................................... \n\n");
 }

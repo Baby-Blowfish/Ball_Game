@@ -1,4 +1,7 @@
 {
-  "makefile.configureOnOpen": false,
-  "ros.distro": "noetic"
+  "ros.distro": "noetic",
+  "files.associations": {
+    "thread": "c",
+    "tuple": "c"
+  }
 }

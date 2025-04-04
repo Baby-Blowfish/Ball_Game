@@ -7,8 +7,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <pthread.h>
-
-#include "common.h"
+#include "client.h"
 
 #define THREAD_NUM 2
 
@@ -18,7 +17,7 @@ int main(int argc, char **argv)
 
   pthread_t tid[THREAD_NUM];
 
-  GameSharedContext* arg = ball_server_arg_init();
+  GameSharedContext* arg = ball_client_arg_init();
   if(arg == NULL)
   {
     perror("malloc() : arg ");
@@ -52,19 +51,13 @@ int main(int argc, char **argv)
       return -1;
   }
 
-  // 처음 볼리스트에 공 5개 추가
-  for (int i = 0; i < 5; i++) {
-    BallObject b = createBall(arg->ball_list_manager->total_count++, arg->framebuffer->vinfo.xres, arg->framebuffer->vinfo.yres ,20);
-    arg->ball_list_manager->head = appendBall(arg->ball_list_manager->head, &arg->ball_list_manager->tail ,b);
-  }
-
   // 공 5개 속성 표시
   printInfoBall(arg->ball_list_manager->head);
 
   // 키보드 입력 스레드 생성
   if(pthread_create(&tid[0], NULL, socket_send_thread, arg) != 0)
   {
-    ball_server_arg_destroy(arg);
+    ball_client_arg_destroy(arg);
     perror("pthread_create()");
     return -1;
   }
@@ -72,7 +65,7 @@ int main(int argc, char **argv)
   // 서버 -> 클라이언트 수신용 스래드
   if(pthread_create(&tid[1], NULL, socket_recv_echo_thread, arg->socket_ctx) != 0)
   {
-    ball_server_arg_destroy(arg);
+    ball_client_arg_destroy(arg);
     perror("pthread_create()");
     return -1;
   }
@@ -85,19 +78,15 @@ int main(int argc, char **argv)
     }
 
     fb_fillScr(arg->framebuffer, 0, 0, 0);
-    moveBallList(arg->ball_list_manager->head, arg->framebuffer->vinfo.xres, arg->framebuffer->vinfo.yres);
+    client_move_all(arg->ball_list_manager);
     drawBallList(arg->framebuffer, arg->ball_list_manager->head);
-
     pthread_mutex_unlock(&arg->ball_list_manager->mutex_ball_list);
     usleep(1000000 / 60); // (60 FPS)
   }
 
   for (int i = 0; i < THREAD_NUM; ++i) pthread_join(tid[i], NULL);  // 쓰래드 종료 대기
   shutdown(arg->socket_ctx->socket_fd, SHUT_RDWR); //  소켓 읽기 쓰기 종료 신호
-  close(arg->socket_ctx->socket_fd);  // 소켓 닫기
-	close(arg->framebuffer->fbfd); // 프레임 버퍼 장치 닫기
-
-  freeBallList(&arg->ball_list_manager->head);  // 공 메모리 해제 함수
+  ball_client_arg_destroy(arg);
 
 	return 0;
 }
