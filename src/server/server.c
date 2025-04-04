@@ -69,7 +69,6 @@ char parseCommand(const char* cmdStr, int* ball_count, int* radius) {
 // 공 리스트를 문자열로 직렬화하여 모든 클라이언트에 전송
 void broadcast_ball_state(ClientListManager* client_mgr, BallListManager* ball_mgr) {
    
-
     pthread_mutex_lock(&ball_mgr->mutex_ball);
     char* buffer  = serialize_ball_list(ball_mgr);
     pthread_mutex_unlock(&ball_mgr->mutex_ball);
@@ -102,6 +101,13 @@ void* worker_thread(void* arg) {
 
         char cmd = parseCommand(task.data, &count, &radius);
 
+        if ( cmd == 0)
+        {
+            char error_msg[] = "Invalid command format\n";
+            send(task.fd, error_msg, strlen(error_msg), 0);
+            continue;
+        }
+
         if(cmd == CMD_EXIT)
         {
             // 클라이언트 종료 처리
@@ -122,10 +128,22 @@ void* worker_thread(void* arg) {
         }
 
         // 다른 명령이 들어왔을때 처리 필요함!
-
-        pthread_mutex_lock(&ctx->ball_list_manager->mutex_ball);
-        dispatch_command(cmd, count, radius, ctx->ball_list_manager);  // 해상도는 임의 지정
-        pthread_mutex_unlock(&ctx->ball_list_manager->mutex_ball);
+        switch (cmd) {
+            case CMD_ADD:
+            case CMD_DEL:
+            case CMD_SPEED_UP:
+            case CMD_SPEED_DOWN:
+                pthread_mutex_lock(&ctx->ball_list_manager->mutex_ball);
+                dispatch_command(cmd, count, radius, ctx->ball_list_manager);
+                pthread_mutex_unlock(&ctx->ball_list_manager->mutex_ball);
+                break;
+            default:
+                {
+                    char unknown_msg[] = "Unknown command\n";
+                    send(task.fd, unknown_msg, strlen(unknown_msg), 0);
+                    continue;
+                }
+        }
 
         char response[64];
         snprintf(response, sizeof(response), "OK %c : %d\n", cmd, count);
