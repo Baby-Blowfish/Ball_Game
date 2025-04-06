@@ -129,43 +129,33 @@ void* socket_send_thread(void* arg) {
         
         send(socket_ctx->socket_fd, input, strlen(input), 0);
 
-        pthread_mutex_lock(&ball_list_manager->mutex_ball_list);
+        pthread_mutex_lock(&ball_list_manager->mutex_ball);
 
         if (cmd == CMD_EXIT) {
             pthread_mutex_lock(&socket_ctx->mutex_socket);
             socket_ctx->is_running = 0;
             pthread_mutex_unlock(&socket_ctx->mutex_socket);
-            pthread_mutex_unlock(&ball_list_manager->mutex_ball_list);
+            pthread_mutex_unlock(&ball_list_manager->mutex_ball);
             shutdown(socket_ctx->socket_fd, SHUT_WR);
             break;
         }
 
         switch (cmd) {
             case CMD_ADD:
-                ball_list_manager->flag_add_remove = 1;  // 공 증가
                 if (ball_count == 0) ball_count = 1;
-                for (int i = 0; i < ball_count; i++) {
-                    BallObject b = createBall(ball_list_manager->total_count++, framebuffer->vinfo.xres, framebuffer->vinfo.yres, 20);
-                    ball_list_manager->head = appendBall(ball_list_manager->head, &ball_list_manager->tail, b);
-                }
+                add_ball(ball_list_manager, ball_count,framebuffer->vinfo.xres, framebuffer->vinfo.yres, 20);
                 break;
 
             case CMD_DEL:
-                ball_list_manager->flag_add_remove = -1; // 공 감소
                 if (ball_count == 0) ball_count = 1;
-                for (int i = 0; i < ball_count; i++) {
-                  if( deleteLastBall(&ball_list_manager->head, &ball_list_manager->tail) == NULL)   printf("There are no balls.\n");
-                  else ball_list_manager->total_count--;
-                }
+                delete_ball(ball_list_manager, ball_count);
                 break;
 
             case CMD_SPEED_UP:
-                ball_list_manager->flag_speed_change = 1; // 속도 증가
                 speedUpBalls(ball_list_manager->head);
                 break;
 
             case CMD_SPEED_DOWN:
-                ball_list_manager->flag_speed_change = -1; // 속도 감소
                 slowDownBalls(ball_list_manager->head);
                 break;
 
@@ -176,7 +166,7 @@ void* socket_send_thread(void* arg) {
         if (cmd == CMD_ADD || cmd == CMD_DEL || cmd == CMD_SPEED_UP || cmd == CMD_SPEED_DOWN) {
           printInfoBall(ball_list_manager->head);
         }
-        pthread_mutex_unlock(&ball_list_manager->mutex_ball_list);
+        pthread_mutex_unlock(&ball_list_manager->mutex_ball);
     }
     return NULL;
 }
@@ -199,7 +189,7 @@ GameSharedContext* ball_client_arg_init() {
         return NULL;
     }
 
-    client_ball_manager_init(arg->ball_list_manager, START_BALL_COUNT, arg->framebuffer->vinfo.xres,arg->framebuffer->vinfo.yres);
+    ball_manager_init(arg->ball_list_manager);
 
     // 초기화: socket_ctx
     memset(arg->socket_ctx, 0, sizeof(SocketContext));
@@ -219,7 +209,7 @@ GameSharedContext* ball_client_arg_init() {
 void ball_client_arg_destroy(GameSharedContext* arg) {
     if (!arg) return;
 
-    client_ball_manager_destroy(arg->ball_list_manager);
+    ball_manager_destroy(arg->ball_list_manager);
 
     if (arg->socket_ctx) {
         pthread_mutex_destroy(&arg->socket_ctx->mutex_socket);
@@ -263,7 +253,7 @@ void parse_and_draw_balls(const char* recv_buf, dev_fb* fb) {
             sb.color.b = b;
 
             // 출력
-            drawBall(fb, &sb);
+            draw_ball(fb, &sb);
         }
 
         token = strtok(NULL, "|");

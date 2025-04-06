@@ -24,6 +24,19 @@ typedef struct {
 
 
 /**
+ * @brief 클라이언트 해상도 기준의 화면 출력용 공 구조체
+ * 서버에서 받은 BallObject를 픽셀 단위로 변환한 결과
+ */
+typedef struct {
+    int id;
+    int x, y;           ///< 실제 화면상 좌표 (픽셀)
+    int dx, dy;         ///< 화면 속도 
+    int radius;         ///< 반지름 (픽셀 기준)
+    RGBColor color;
+} ScreenBall;
+
+
+/**
  * @brief 단일 공(Ball) 객체를 나타내는 구조체 (서버 전용)
  * 논리 좌표계(0.0 ~ 1000.0) 기준
  */

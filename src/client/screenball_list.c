@@ -38,7 +38,7 @@ BallListNode* appendBall(BallListNode* head, BallListNode** tail, ScreenBall bal
 void moveBallList(BallListNode* head, int width, int height) {
     BallListNode* cur = head;
     while (cur != NULL) {
-        moveBall(&cur->data, width, height);
+        move_screen_ball(&cur->data, width, height);
         cur = cur->next;
     }
 }

@@ -71,16 +71,16 @@ int main(int argc, char **argv)
   }
 
   while (1) {
-    pthread_mutex_lock(&arg->ball_list_manager->mutex_ball_list);
+    pthread_mutex_lock(&arg->ball_list_manager->mutex_ball);
     if (!arg->socket_ctx->is_running) {
-      pthread_mutex_unlock(&arg->ball_list_manager->mutex_ball_list);
+      pthread_mutex_unlock(&arg->ball_list_manager->mutex_ball);
       break;
     }
 
     fb_fillScr(arg->framebuffer, 0, 0, 0);
-    client_move_all(arg->ball_list_manager);
-    drawBallList(arg->framebuffer, arg->ball_list_manager->head);
-    pthread_mutex_unlock(&arg->ball_list_manager->mutex_ball_list);
+    moveBallList(arg->ball_list_manager->head, arg->framebuffer->vinfo.xres, arg->framebuffer->vinfo.yres);
+    draw_ball_list(arg->framebuffer, arg->ball_list_manager->head);
+    pthread_mutex_unlock(&arg->ball_list_manager->mutex_ball);
     usleep(1000000 / 60); // (60 FPS)
   }
 

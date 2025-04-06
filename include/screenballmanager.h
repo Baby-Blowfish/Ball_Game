@@ -37,14 +37,36 @@ typedef struct {
     int total_count;     ///< 현재 리스트에 존재하는 공의 총 개수
 } BallListManager;
 
+typedef void (*CommandHandler)(BallListManager*, int, int, int, int); // 테이블 매핑
 
-void drawBall(dev_fb* fb, ScreenBall* b);
+typedef struct {
+    char cmd;
+    CommandHandler handler;
+} CommandEntry;
 
-void drawBallList(dev_fb* fb, BallListNode* head);
+typedef unsigned char uchar;
+
+extern CommandEntry command_table[];
+
+
+
+void draw_ball(dev_fb* fb, ScreenBall* b);
+
+void draw_ball_list(dev_fb* fb, BallListNode* head);
+
 
 void ball_manager_init(BallListManager* manager);
 
 void ball_manager_destroy(BallListManager* manager);
+
+int logic_to_pixel(float logic, int screen_size);
+
+ScreenBall logical_to_screen_ball(LogicalBall l, int width, int height);
+
+LogicalBall screen_to_logical_ball(ScreenBall s, int width, int height);
+
+// 문자열로부터 리스트를 갱신하는 함수
+void updateBallListFromSerialized(BallListManager* manager, const char* str, int width, int height);
 
 void add_ball(BallListManager* manager, int count, int width, int height,int radius);
 
@@ -52,7 +74,17 @@ void delete_ball(BallListManager* manager, int count);
 
 void move_all_ball(dev_fb* fb, BallListManager* manager);
 
-BallListNode* deserialize_ball_list(const char* str);
+// 핸들러 함수 정의
+void handle_add(BallListManager* m, int count, int width, int height, int radius);
 
+void handle_delete(BallListManager* m, int count, int width, int height, int radius);
+
+void handle_speed_up(BallListManager* m, int count, int width, int height, int radius);
+
+void handle_speed_down(BallListManager* m, int count, int width, int height, int radius);
+
+void dispatch_command(char cmd, int count, int width, int height, int radius, BallListManager* m);
+
+BallListNode* deserialize_ball_list(const char* str);
 
 #endif // SCREEN_BALL_MANAGER_H
