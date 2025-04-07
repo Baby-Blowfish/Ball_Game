@@ -61,6 +61,26 @@ BallListNode* deleteLastBall(BallListNode** head, BallListNode** tail) {
     return NULL;
 }
 
+/**
+ * @brief 공 리스트 전체 삭제 (모든 공 제거)
+ *
+ * @param manager BallListManager 포인터
+ */
+void delete_all_ball(BallListNode** head, BallListNode** tail, int* count) {
+    BallListNode* cur = *head;
+    while (cur != NULL) {
+        BallListNode* temp = cur;
+        cur = cur->next;
+        free(temp);
+        (*count)--;
+    }
+
+    *head = NULL;
+    *tail = NULL;
+}
+
+
+
 BallListNode* deep_copy_ball_list(BallListNode* head) {
     BallListNode* new_head = NULL;
     BallListNode* new_tail = NULL;
@@ -70,7 +90,6 @@ BallListNode* deep_copy_ball_list(BallListNode* head) {
         new_head = appendBall(new_head, &new_tail, current->data);
         current = current->next;
     }
-
     return new_head;
 }
 

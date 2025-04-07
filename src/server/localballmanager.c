@@ -45,7 +45,7 @@ char* serialize_ball_list(BallListManager* manager) {
 
     while (cur) {
         char temp[256];
-        snprintf(temp, sizeof(temp), "%d,%.2f,%.2f,%.2f,%.2f,%d,%hhu,%hhu,%hhu|",
+        snprintf(temp, sizeof(temp), "%d,%.2f,%.2f,%d,%d,%d,%hhu,%hhu,%hhu|",
                  cur->data.id,
                  cur->data.x, cur->data.y,
                  cur->data.dx, cur->data.dy,

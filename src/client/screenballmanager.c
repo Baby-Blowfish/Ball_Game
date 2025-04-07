@@ -13,6 +13,27 @@ void draw_ball_list(dev_fb* fb, BallListNode* head) {
     }
 }
 
+void draw_command_guide(dev_fb* fb) {
+    short text_height = 12;
+    int padding = 5;
+
+    pixel bg_start = {0, fb->vinfo.yres - text_height - padding};
+    int box_height = text_height + padding * 2;
+
+    // (1) 텍스트 박스 영역 지우기 (흑색)
+    fb_fillBox(fb, bg_start, fb->vinfo.xres, box_height, 0, 0, 0);
+
+    // (2) 텍스트 출력
+    pixel cursor;
+    cursor.x = 10;
+    cursor.y = fb->vinfo.yres - text_height - padding;
+
+    const char* cmd_guide =
+        "a: Create | d: Delete | w/s: Speed | a:3 d:2 | x: Exit";
+
+    fb_printStr(fb, cmd_guide, &cursor, text_height, 255, 255, 255); // 흰색
+}
+
 
 void ball_manager_init(BallListManager* manager) {
 
@@ -45,51 +66,29 @@ ScreenBall logical_to_screen_ball(LogicalBall l, int width, int height) {
     s.id = l.id;
     s.x = logic_to_pixel(l.x, width);
     s.y = logic_to_pixel(l.y, height);
-    s.dx = logic_to_pixel(l.dx, width);
-    s.dy = logic_to_pixel(l.dy, height);
+    s.dx = l.dx;
+    s.dy = l.dy;
 
     int min_res = (width < height) ? width : height;
     s.radius = logic_to_pixel(l.radius, min_res);
-
+    if(s.radius <= min_res) s.radius = 5;
+    
     s.color = l.color; // RGB 복사
     return s;
 }
 
-/**
- * @brief 화면 좌표계(ScreenBall)를 논리 좌표계(LogicalBall)로 변환
- * 
- * @param s 화면 좌표계 공 정보
- * @param width 클라이언트 해상도 너비
- * @param height 클라이언트 해상도 높이
- * @return 변환된 논리 좌표계 공 객체
- */
-LogicalBall screen_to_logical_ball(ScreenBall s, int width, int height) {
-    LogicalBall l;
-    l.id = s.id;
-    
-    // 픽셀 좌표를 논리 좌표로 변환 (0~1000 범위)
-    l.x = (float)s.x / width * 1000.0f;
-    l.y = (float)s.y / height * 1000.0f;
-    l.dx = (float)s.dx / width * 1000.0f;
-    l.dy = (float)s.dy / height * 1000.0f;
-
-    int min_res = (width < height) ? width : height;
-    l.radius = (float)s.radius / min_res * 1000.0f;
-
-    l.color = s.color; // RGB 복사
-    return l;
-}
 
 void updateBallListFromSerialized(BallListManager* manager, const char* str, int width, int height) {
-    delete_ball(manager, manager->total_count); // 전체 삭제
+
+    delete_all_ball(&manager->head, &manager->tail, &manager->total_count); // 전체 삭제
 
     char* input = strdup(str);
     if(input == NULL) return;   // 복사할 공간이 없을때
 
     char* token = strtok(input, "|");
-    while (token != NULL) {
+    while ((token != NULL) && (strlen(token) > 0)) {
         LogicalBall l;
-        sscanf(token, "%d,%f,%f,%f,%f,%d,%hhu,%hhu,%hhu",
+        sscanf(token, "%d,%f,%f,%d,%d,%d,%hhu,%hhu,%hhu",
                &l.id,
                &l.x, &l.y,
                &l.dx, &l.dy,
@@ -98,7 +97,9 @@ void updateBallListFromSerialized(BallListManager* manager, const char* str, int
         ScreenBall ball = logical_to_screen_ball(l, width, height);
         manager->head = appendBall(manager->head, &manager->tail, ball);
         manager->total_count++;
+        token = strtok(NULL, "|");
     }
+    // printf("File: %s | Line: %d | Function: %s | Message: %s\033[0m\n", __FILE__, __LINE__, __FUNCTION__,"ohh" );
     free(input);
 }
 

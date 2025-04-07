@@ -68,12 +68,11 @@ BallListNode* deleteLastBall(BallListNode** head, BallListNode** tail) {
     return *head;
 }
 
-
 void speedUpBalls(BallListNode* head) {
     BallListNode* cur = head;
     while (cur != NULL) {
-        cur->data.dx *= 2.0f;
-        cur->data.dy *= 2.0f;
+        cur->data.dx *= 2;
+        cur->data.dy *= 2;
         cur = cur->next;
     }
     printInfoBall(head);
@@ -83,14 +82,14 @@ void slowDownBalls(BallListNode* head) {
     BallListNode* cur = head;
     while (cur != NULL) {
         if (cur->data.dx > 0)
-            cur->data.dx = (cur->data.dx > 1.0f) ? cur->data.dx / 2.0f : 1.0f;
+            cur->data.dx = (cur->data.dx > 1) ? cur->data.dx / 2 : 1;
         else if (cur->data.dx < 0)
-            cur->data.dx = (cur->data.dx < -1.0f) ? cur->data.dx / 2.0f : -1.0f;
+            cur->data.dx = (cur->data.dx < -1) ? cur->data.dx / 2 : -1;
 
         if (cur->data.dy > 0)
-            cur->data.dy = (cur->data.dy > 1.0f) ? cur->data.dy / 2.0f : 1.0f;
+            cur->data.dy = (cur->data.dy > 1) ? cur->data.dy / 2 : 1;
         else if (cur->data.dy < 0)
-            cur->data.dy = (cur->data.dy < -1.0f) ? cur->data.dy / 2.0f : -1.0f;
+            cur->data.dy = (cur->data.dy < -1) ? cur->data.dy / 2 : -1;
 
         cur = cur->next;
     }
@@ -121,7 +120,7 @@ void printInfoBall(BallListNode *head) {
 
     printf("\n................................... \n");
     while (cur) {
-        printf("ID: %d,  x : %.1f,  y : %.1f, dx : %.1f, dy : %.1f, RGB : (%d, %d, %d)\n",
+        printf("ID: %d,  x : %.1f,  y : %.1f, dx : %d, dy : %d, RGB : (%d, %d, %d)\n",
                cur->data.id, cur->data.x, cur->data.y,
                cur->data.dx, cur->data.dy,
                cur->data.color.r, cur->data.color.g, cur->data.color.b);

@@ -24,4 +24,6 @@ BallListNode* deep_copy_ball_list(BallListNode* head);
 
 void freeBallList(BallListNode** head);
 
+void delete_all_ball(BallListNode** head, BallListNode** tail, int* count); // 모든 공 제거
+
 #endif  //SCREEN_BALL_NODE_H

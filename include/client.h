@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <signal.h>
+#include <sys/select.h>
 #include "screenballmanager.h"
 
 
@@ -42,5 +43,6 @@ void* render_thread(void* arg);
 // 서버 -> 클라이언트 수신용 스래드
 void* socket_recv_thread(void* arg);
 void* socket_send_thread(void* arg);
+
 
 #endif

@@ -101,5 +101,6 @@ int main(int argc, char **argv)
   close(arg->socket_fd);
   manager_destroy(arg);
 
+  printf(COLOR_GREEN "[Client] Shutting down..." COLOR_RESET);
 	return 0;
 }

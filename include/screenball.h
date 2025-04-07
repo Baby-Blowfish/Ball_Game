@@ -41,7 +41,7 @@ typedef struct {
 typedef struct {
     int id;
     float x, y;         ///< 논리 중심 위치 (0.0 ~ 1000.0)
-    float dx, dy;       ///< 논리 속도
+    int dx, dy;         ///< 속도
     int radius;         ///< 논리 반지름 (단위: 논리 좌표 기준)
     RGBColor color;
 } LogicalBall;

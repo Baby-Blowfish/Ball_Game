@@ -54,6 +54,7 @@ void draw_ball(dev_fb* fb, ScreenBall* b);
 
 void draw_ball_list(dev_fb* fb, BallListNode* head);
 
+void draw_command_guide(dev_fb* fb);
 
 void ball_manager_init(BallListManager* manager);
 
@@ -62,8 +63,6 @@ void ball_manager_destroy(BallListManager* manager);
 int logic_to_pixel(float logic, int screen_size);
 
 ScreenBall logical_to_screen_ball(LogicalBall l, int width, int height);
-
-LogicalBall screen_to_logical_ball(ScreenBall s, int width, int height);
 
 // 문자열로부터 리스트를 갱신하는 함수
 void updateBallListFromSerialized(BallListManager* manager, const char* str, int width, int height);
