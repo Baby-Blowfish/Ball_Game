@@ -3,6 +3,10 @@
 
 #include "localball.h"
 
+#define MAX_SPEED 2000
+#define MIN_SPEED -2000
+
+
 /**
  * @brief A node structure for storing ball objects in a linked list
  * @details This structure represents a node in a singly linked list that stores ball objects.

@@ -1,6 +1,7 @@
-#include  "localball_list.h"
+#include "test_screenball_list.h"
 
-BallListNode* createNode(LogicalBall ball) {
+
+BallListNode* createNode(ScreenBall ball) {
 
   BallListNode *newnode = (BallListNode*)malloc(sizeof(BallListNode));
   if (!newnode) {
@@ -15,7 +16,7 @@ BallListNode* createNode(LogicalBall ball) {
     return newnode;
 }
 
-BallListNode* appendBall(BallListNode* head, BallListNode** tail, LogicalBall ball)
+BallListNode* appendBall(BallListNode* head, BallListNode** tail, ScreenBall ball)
 {
   BallListNode* newnode = NULL;
   if((newnode =createNode(ball)) == NULL)
@@ -29,17 +30,8 @@ BallListNode* appendBall(BallListNode* head, BallListNode** tail, LogicalBall ba
     *tail = newnode;
   }
 
-  printf(COLOR_GREEN "[Success] '%d' added successfully." COLOR_RESET, ball.id);
   return head;
 
-}
-
-void moveBallList(BallListNode* head) {
-    BallListNode* cur = head;
-    while (cur != NULL) {
-        move_logical_ball(&cur->data);
-        cur = cur->next;
-    }
 }
 
 
@@ -62,47 +54,45 @@ BallListNode* deleteLastBall(BallListNode** head, BallListNode** tail) {
         cur->next = NULL;
         *tail = cur;
     }
+
     printf(COLOR_GREEN "[Success] '%d' Deleted successfully." COLOR_RESET, removed->data.id);
 
     free(removed);
-    return *head;
+    return NULL;
 }
 
-void speedUpBalls(BallListNode* head) {
-    BallListNode* cur = head;
+/**
+ * @brief 공 리스트 전체 삭제 (모든 공 제거)
+ *
+ * @param manager BallListManager 포인터
+ */
+void delete_all_ball(BallListNode** head, BallListNode** tail, int* count) {
+    BallListNode* cur = *head;
     while (cur != NULL) {
-        if (cur->data.dx > 0)
-            cur->data.dx = (cur->data.dx > MAX_SPEED) ? MAX_SPEED : cur->data.dx * 2;
-        else if (cur->data.dx < 0)
-            cur->data.dx = (cur->data.dx < MIN_SPEED) ? MIN_SPEED : cur->data.dx * 2;
-
-        if (cur->data.dy > 0)
-            cur->data.dy = (cur->data.dy > MAX_SPEED) ? MAX_SPEED : cur->data.dy * 2;
-        else if (cur->data.dy < 0)
-            cur->data.dy = (cur->data.dy < MIN_SPEED) ? MIN_SPEED : cur->data.dy * 2;
-
+        BallListNode* temp = cur;
         cur = cur->next;
+        free(temp);
+        (*count)--;
     }
-    printInfoBall(head);
+
+    *head = NULL;
+    *tail = NULL;
 }
 
-void slowDownBalls(BallListNode* head) {
-    BallListNode* cur = head;
-    while (cur != NULL) {
-        if (cur->data.dx > 0)
-            cur->data.dx = (cur->data.dx > 1) ? cur->data.dx / 2 : 1;
-        else if (cur->data.dx < 0)
-            cur->data.dx = (cur->data.dx < -1) ? cur->data.dx / 2 : -1;
 
-        if (cur->data.dy > 0)
-            cur->data.dy = (cur->data.dy > 1) ? cur->data.dy / 2 : 1;
-        else if (cur->data.dy < 0)
-            cur->data.dy = (cur->data.dy < -1) ? cur->data.dy / 2 : -1;
 
-        cur = cur->next;
+BallListNode* deep_copy_ball_list(BallListNode* head) {
+    BallListNode* new_head = NULL;
+    BallListNode* new_tail = NULL;
+
+    BallListNode* current = head;
+    while (current) {
+        new_head = appendBall(new_head, &new_tail, current->data);
+        current = current->next;
     }
-    printInfoBall(head);
+    return new_head;
 }
+
 
 void freeBallList(BallListNode** head) {
     BallListNode* cur = *head;
@@ -116,10 +106,12 @@ void freeBallList(BallListNode** head) {
 }
 
 
-void printInfoBall(BallListNode *head) {
+void printInfoBall(BallListNode *head)
+{
     int i = 0;
 
-    if (!head) {
+    if (!head)
+    {
         printf(COLOR_YELLOW "\nNo data available.\n\n" COLOR_RESET);
         return;
     }
@@ -127,8 +119,9 @@ void printInfoBall(BallListNode *head) {
     BallListNode *cur = head;
 
     printf("\n................................... \n");
-    while (cur) {
-        printf("ID: %d,  x : %.1f,  y : %.1f, dx : %d, dy : %d, RGB : (%d, %d, %d)\n",
+    while (cur)
+    {
+        printf("ID: %d,  x : %d,  y : %d, dx : %d, dy : %d, RGB : (%d, %d, %d)\n",
                cur->data.id, cur->data.x, cur->data.y,
                cur->data.dx, cur->data.dy,
                cur->data.color.r, cur->data.color.g, cur->data.color.b);
@@ -136,6 +129,6 @@ void printInfoBall(BallListNode *head) {
         cur = cur->next;
         i++;
     }
-    printf("\ntotal : %d\n", i);
+    printf("\ntotal : %d\n",i);
     printf("................................... \n\n");
 }
