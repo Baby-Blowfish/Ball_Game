@@ -2,6 +2,171 @@
 
 A client-server based interactive ball game that allows multiple clients to connect to a server and manipulate balls on a shared display.
 
+## Technology Stack
+
+### Programming Language
+
+- **C**: Core implementation language
+- **C99 Standard**: Modern C features and syntax
+
+### System Programming
+
+- **Linux System Calls**: For low-level system operations
+- **POSIX Threads (pthread)**: For multi-threading support
+- **Socket Programming**: For network communication
+- **Framebuffer API**: For direct display manipulation
+
+### Network Communication
+
+- **TCP/IP**: For reliable client-server communication
+- **Socket API**: For network socket operations
+- **Select I/O Multiplexing**: For handling multiple client connections
+
+### Build Tools
+
+- **GCC**: GNU Compiler Collection
+- **Make**: Build automation tool
+- **GDB**: Debugging tool
+
+### Development Tools
+
+- **Doxygen**: Documentation generation
+- **Git**: Version control system
+- **Valgrind**: Memory leak detection and profiling
+
+### Libraries
+
+- **Standard C Library**: For basic I/O and data manipulation
+- **POSIX Library**: For system-level operations
+- **Linux Framebuffer Library**: For display operations
+
+### Operating System
+
+- **Linux**: Primary development and deployment platform
+- **Kernel Version**: 5.15.0 or higher recommended
+
+## System Architecture
+
+### High-Level Architecture
+
+```mermaid
+graph TD
+    subgraph "Server"
+        S[Server Process]
+        CLM[Client List Manager]
+        LBM[Local Ball Manager]
+        TQ[Task Queue]
+        S --> CLM
+        S --> LBM
+        S --> TQ
+    end
+
+    subgraph "Client 1"
+        C1[Client Process]
+        SBM1[Screen Ball Manager]
+        SBL1[Screen Ball List]
+        C1 --> SBM1
+        SBM1 --> SBL1
+    end
+
+    subgraph "Client 2"
+        C2[Client Process]
+        SBM2[Screen Ball Manager]
+        SBL2[Screen Ball List]
+        C2 --> SBM2
+        SBM2 --> SBL2
+    end
+
+    subgraph "Client N"
+        CN[Client Process]
+        SBMN[Screen Ball Manager]
+        SBLN[Screen Ball List]
+        CN --> SBMN
+        SBMN --> SBLN
+    end
+
+    S <-->|TCP/IP| C1
+    S <-->|TCP/IP| C2
+    S <-->|TCP/IP| CN
+```
+
+### Component Interaction
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+    participant TaskQueue
+    participant LocalBallManager
+    participant ClientListManager
+
+    Client->>Server: Connect
+    Server->>ClientListManager: Register client
+    Server->>Client: Send initial game state
+
+    Client->>Server: Send command (add/delete ball)
+    Server->>TaskQueue: Add task
+    TaskQueue->>LocalBallManager: Process command
+    LocalBallManager->>LocalBallManager: Update game state
+    LocalBallManager->>ClientListManager: Notify state change
+    ClientListManager->>Client: Broadcast updated state
+    Client->>Client: Update display
+```
+
+### Thread Model
+
+```mermaid
+graph TD
+    subgraph "Server Threads"
+        ST[Server Thread]
+        RT[Render Thread]
+        ST -->|Create| RT
+        ST -->|Create| CT1[Client Thread 1]
+        ST -->|Create| CT2[Client Thread 2]
+        ST -->|Create| CTN[Client Thread N]
+    end
+
+    subgraph "Client Threads"
+        MT[Main Thread]
+        RDT[Render Thread]
+        SRT[Socket Receive Thread]
+        SST[Socket Send Thread]
+        MT -->|Create| RDT
+        MT -->|Create| SRT
+        MT -->|Create| SST
+    end
+```
+
+### Data Flow
+
+```mermaid
+flowchart LR
+    subgraph "Client"
+        UI[User Input]
+        SB[Screen Ball Manager]
+        FB[Framebuffer]
+        UI -->|Commands| SB
+        SB -->|Render| FB
+    end
+
+    subgraph "Network"
+        TCP[TCP/IP Socket]
+    end
+
+    subgraph "Server"
+        CM[Command Parser]
+        LBM[Local Ball Manager]
+        CLM[Client List Manager]
+        CM -->|Process| LBM
+        LBM -->|Update| CLM
+        CLM -->|Broadcast| TCP
+    end
+
+    UI -->|Send| TCP
+    TCP -->|Receive| CM
+    TCP -->|Receive| SB
+```
+
 ## Project Overview
 
 Ball Game is a networked application that consists of a server and multiple clients. The server manages the game state and coordinates between clients, while each client connects to the server and displays the game on a framebuffer device.
