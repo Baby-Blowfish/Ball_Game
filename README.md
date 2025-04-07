@@ -117,23 +117,46 @@ sequenceDiagram
 
 ```mermaid
 graph TD
-    subgraph "Server Threads"
-        ST[Server Thread]
-        RT[Render Thread]
-        ST -->|Create| RT
-        ST -->|Create| CT1[Client Thread 1]
-        ST -->|Create| CT2[Client Thread 2]
-        ST -->|Create| CTN[Client Thread N]
-    end
-
     subgraph "Client Threads"
         MT[Main Thread]
         RDT[Render Thread]
         SRT[Socket Receive Thread]
         SST[Socket Send Thread]
+
         MT -->|Create| RDT
         MT -->|Create| SRT
         MT -->|Create| SST
+
+        RDT -->|30 FPS| FB[Framebuffer]
+        SRT -->|Receive| SB[Screen Ball List]
+        SST -->|Send| SV[Server]
+
+        UI[User Input] -->|Commands| SST
+    end
+
+    subgraph "Server Threads"
+        ST[Main Thread]
+        WT1[Worker Thread 1]
+        WT2[Worker Thread 2]
+        WTN[Worker Thread N]
+        CBT[Cycle Broadcast Thread]
+
+        ST -->|Create| WT1
+        ST -->|Create| WT2
+        ST -->|Create| WTN
+        ST -->|Create| CBT
+
+        ST -->|epoll_wait| EP[Epoll Events]
+        EP -->|Accept| ST
+        EP -->|EPOLLIN| ST
+
+        ST -->|Task| TQ[Task Queue]
+        TQ -->|Dequeue| WT1
+        TQ -->|Dequeue| WT2
+        TQ -->|Dequeue| WTN
+
+        CBT -->|33 FPS| LBM[Local Ball Manager]
+        CBT -->|Broadcast| CLM[Client List Manager]
     end
 ```
 
