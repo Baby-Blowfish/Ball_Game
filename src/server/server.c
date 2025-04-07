@@ -1,10 +1,13 @@
 #include "server.h"
 
+// 전역 변수 정의
+TaskQueue* global_task_queue = NULL;
+volatile sig_atomic_t keep_running = 1;
 
 SharedContext* manager_init() {
     SharedContext* arg = malloc(sizeof(SharedContext));
     if (!arg) {
-        perror("malloc() : BallServerArg");
+        perror("malloc() : SharedContext");
         return NULL;
     }
 
@@ -15,13 +18,19 @@ SharedContext* manager_init() {
 
     if (!arg->ball_list_manager || !arg->client_list_manager || !arg->task_queue) {
         perror("malloc() : internal");
-        free(arg->ball_list_manager); free(arg->client_list_manager);
+        free(arg->ball_list_manager);
+        free(arg->client_list_manager);
+        free(arg->task_queue); 
+        free(arg);
         return NULL;
     }
 
     ball_manager_init(arg->ball_list_manager);
     client_list_manager_init(arg->client_list_manager);
     task_queue_init(arg->task_queue);
+    
+    // 전역 변수 초기화
+    global_task_queue = arg->task_queue;
 
     return arg;
 }
@@ -152,7 +161,7 @@ void* worker_thread(void* arg) {
         broadcast_ball_state(ctx->client_list_manager, ctx->ball_list_manager);
 
     }
-
+    printf(COLOR_GREEN "[Worker] Thread Shutting down..." COLOR_RESET);
     return NULL;
 }
 
@@ -161,7 +170,11 @@ void* cycle_broadcast_ball_state(void* arg) {
 
     while (keep_running) {
         usleep(30000); // 약 33 FPS
+        pthread_mutex_lock(&ctx->ball_list_manager->mutex_ball);
+        move_all_ball(ctx->ball_list_manager);
+        pthread_mutex_unlock(&ctx->ball_list_manager->mutex_ball);
         broadcast_ball_state(ctx->client_list_manager, ctx->ball_list_manager);
     }
+    printf(COLOR_GREEN "[Cycle Broadcast] Thread Shutting down..." COLOR_RESET);
     return NULL;
 }

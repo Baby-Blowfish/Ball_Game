@@ -17,7 +17,7 @@
 
 //sig_atomic_t 원자적으로 읽기/쓰기 보장
 extern volatile sig_atomic_t keep_running;
-
+extern TaskQueue* global_task_queue;
 /**
  * @brief 게임 전체에서 공유되는 전역 상태 컨텍스트 구조체
  *

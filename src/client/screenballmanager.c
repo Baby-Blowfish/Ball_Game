@@ -102,7 +102,6 @@ void updateBallListFromSerialized(BallListManager* manager, const char* str, int
     free(input);
 }
 
-
 void add_ball(BallListManager* manager, int count, int width, int height, int radius) {
     for (int i = 0; i < count; i++) {
         ScreenBall b = create_screen_ball(manager->total_count++, width, height, radius);
@@ -116,60 +115,4 @@ void delete_ball(BallListManager* manager, int count) {
             manager->total_count--;
         else printf(COLOR_BLUE  "There are no balls." COLOR_RESET);
     }
-}
-
-void move_all_ball(dev_fb* fb, BallListManager* manager) {
-    moveBallList(manager->head, fb->vinfo.xres, fb->vinfo.yres);
-}
-
-// 핸들러 함수 정의
-void handle_add(BallListManager* m, int count, int width, int height, int radius) {
-    if (count <= 0) count = 1;
-    add_ball(m, count,  width, height, radius);
-}
-
-void handle_delete(BallListManager* m, int count, int width, int height, int radius) {
-    (void)width;
-    (void)height;
-    (void)radius;
-    if (count <= 0) count = 1;
-    delete_ball(m, count);
-}
-
-void handle_speed_up(BallListManager* m, int count, int width, int height, int radius) {
-    (void)count;
-    (void)width;
-    (void)height;
-    (void)radius;
-    speedUpBalls(m->head);
-}
-
-void handle_speed_down(BallListManager* m, int count, int width, int height, int radius) {
-    (void)count;
-    (void)width;
-    (void)height;
-    (void)radius;
-    slowDownBalls(m->head);
-}
-
-CommandEntry command_table[] = {
-    {CMD_ADD, handle_add},
-    {CMD_DEL, handle_delete},
-    {CMD_SPEED_UP, handle_speed_up},
-    {CMD_SPEED_DOWN, handle_speed_down}
-};
-
-void dispatch_command(char cmd, int count, int width, int height, int radius, BallListManager* m) {
-    for (size_t i = 0; i < sizeof(command_table)/sizeof(CommandEntry); ++i) {
-        if (command_table[i].cmd == cmd) {
-            command_table[i].handler(m, count, width, height, radius);
-            return;
-        }
-    }
-    printf("[Server] Unknown command: %c\n", cmd);
-}
-
-BallListNode* deserialize_ball_list(const char* str)
-{
-    
 }

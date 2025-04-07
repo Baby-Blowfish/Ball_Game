@@ -72,19 +72,5 @@ void add_ball(BallListManager* manager, int count, int width, int height,int rad
 
 void delete_ball(BallListManager* manager, int count);
 
-void move_all_ball(dev_fb* fb, BallListManager* manager);
-
-// 핸들러 함수 정의
-void handle_add(BallListManager* m, int count, int width, int height, int radius);
-
-void handle_delete(BallListManager* m, int count, int width, int height, int radius);
-
-void handle_speed_up(BallListManager* m, int count, int width, int height, int radius);
-
-void handle_speed_down(BallListManager* m, int count, int width, int height, int radius);
-
-void dispatch_command(char cmd, int count, int width, int height, int radius, BallListManager* m);
-
-BallListNode* deserialize_ball_list(const char* str);
 
 #endif // SCREEN_BALL_MANAGER_H

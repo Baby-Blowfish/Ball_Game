@@ -17,13 +17,10 @@ BallListNode* appendBall(BallListNode* head, BallListNode** tail, ScreenBall bal
 
 void printInfoBall(BallListNode *head);
 
-void moveBallList(BallListNode* head, int width, int height);
 
 BallListNode* deleteLastBall(BallListNode** head, BallListNode** tail);
 
-void speedUpBalls(BallListNode* head);
-
-void slowDownBalls(BallListNode* head);
+BallListNode* deep_copy_ball_list(BallListNode* head);
 
 void freeBallList(BallListNode** head);
 

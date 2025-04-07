@@ -22,6 +22,7 @@ void add_ball(BallListManager* manager, int count, int radius) {
         LogicalBall b = create_logical_ball(manager->total_count++,radius);
         manager->head = appendBall(manager->head, &manager->tail, b);
     }
+    printInfoBall(manager->head);
 }
 
 void delete_ball(BallListManager* manager, int count) {
@@ -30,6 +31,7 @@ void delete_ball(BallListManager* manager, int count) {
             manager->total_count--;
         else printf(COLOR_BLUE  "There are no balls." COLOR_RESET);
     }
+    printInfoBall(manager->head);
 }
 
 void move_all_ball(BallListManager* manager) {
@@ -43,7 +45,7 @@ char* serialize_ball_list(BallListManager* manager) {
 
     while (cur) {
         char temp[256];
-        snprintf(temp, sizeof(temp), "%d,%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d|",
+        snprintf(temp, sizeof(temp), "%d,%.2f,%.2f,%.2f,%.2f,%d,%hhu,%hhu,%hhu|",
                  cur->data.id,
                  cur->data.x, cur->data.y,
                  cur->data.dx, cur->data.dy,

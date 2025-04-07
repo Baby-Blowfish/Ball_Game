@@ -8,12 +8,15 @@
 #include "server.h"
 
 #define MAX_EVENTS 64
-volatile sig_atomic_t keep_running = 1;
+
+extern TaskQueue* global_task_queue;
+extern volatile sig_atomic_t keep_running;
 
 void handle_sigint(int sig) {
     if(sig ==  SIGINT)
     {
         keep_running = 0;
+        pthread_cond_broadcast(&global_task_queue->cond); 
         printf(COLOR_YELLOW "\n[Signal] SIGINT received. Shutting down server..." COLOR_RESET);
     }
 }
@@ -41,14 +44,7 @@ int main(void)
         return -1;
     }
 
-    for (int i = 0; i < NUM_WORKERS; ++i) {
-        if (pthread_create(&workers[i], NULL, worker_thread, (void*)arg) != 0) {
-            perror("pthread_create");
-            return -1;
-        }
-    }
-
-    ssock = socket(AF_INET, SOCK_STREAM, 0);
+       ssock = socket(AF_INET, SOCK_STREAM, 0);
     if (ssock < 0) {
         perror("socket()");
         exit(1);
@@ -93,6 +89,14 @@ int main(void)
     arg->epoll_fd = epfd;
 
     pthread_create(&cycle_broadcast_id, NULL, cycle_broadcast_ball_state, (void*)arg);
+
+    for (int i = 0; i < NUM_WORKERS; ++i) {
+        if (pthread_create(&workers[i], NULL, worker_thread, (void*)arg) != 0) {
+            perror("pthread_create");
+            return -1;
+        }
+    }
+
 
     printf(COLOR_BLUE "[Server] Listening on port %d..."COLOR_RESET, SERVER_PORT);
 
@@ -145,13 +149,13 @@ int main(void)
                     memcpy(task.data, buf, len);
                     task.length = len;
                     enqueue_task(arg->task_queue, task);  // arg = SharedContext*
-
+                    printf("[Server] Enqueued task for fd %d\n", fd);
                 }
             }
         }
     }
 
-    printf("[Server] Shutting down...\n");
+    printf("[Server] Main Thread Shutting down...\n");
     close(ssock);
     close(epfd);
 

@@ -53,7 +53,4 @@ typedef struct {
 // @param radius 반지름
 ScreenBall create_screen_ball(int id, int width, int height, int radius);
 
-// @brief Ball을 이동시키는 함수 (논리좌표계 기준)
-// @param b 이동시킬 Ball (참조)
-void move_screen_ball(ScreenBall *b, int width, int height);
 #endif // SCREEN_BALL_H

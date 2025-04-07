@@ -1,5 +1,6 @@
 #include "task.h"
 
+
 // 1. TaskQueue 초기화
 void task_queue_init(TaskQueue* q) {
     memset(q, 0,sizeof(TaskQueue));
@@ -34,8 +35,11 @@ Task dequeue_task(TaskQueue* q) {
     pthread_mutex_lock(&q->mutex);
 
     // 큐가 비었으면 대기
-    while (q->count == 0) {
+    while (q->count == 0 && keep_running) {
         pthread_cond_wait(&q->cond, &q->mutex);
+    }
+    if (!keep_running) {
+        pthread_mutex_unlock(&q->mutex);
     }
 
     Task task = q->queue[q->front];

@@ -30,7 +30,6 @@ BallListNode* appendBall(BallListNode* head, BallListNode** tail, LogicalBall ba
   }
 
   printf(COLOR_GREEN "[Success] '%d' added successfully." COLOR_RESET, ball.id);
-
   return head;
 
 }
@@ -66,7 +65,7 @@ BallListNode* deleteLastBall(BallListNode** head, BallListNode** tail) {
     printf(COLOR_GREEN "[Success] '%d' Deleted successfully." COLOR_RESET, removed->data.id);
 
     free(removed);
-    return NULL;
+    return *head;
 }
 
 
@@ -77,6 +76,7 @@ void speedUpBalls(BallListNode* head) {
         cur->data.dy *= 2.0f;
         cur = cur->next;
     }
+    printInfoBall(head);
 }
 
 void slowDownBalls(BallListNode* head) {
@@ -94,6 +94,7 @@ void slowDownBalls(BallListNode* head) {
 
         cur = cur->next;
     }
+    printInfoBall(head);
 }
 
 void freeBallList(BallListNode** head) {

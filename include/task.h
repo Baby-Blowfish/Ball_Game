@@ -5,8 +5,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <signal.h>
 
 #include "console_color.h"
+
+extern volatile sig_atomic_t keep_running;
 
 #define TASK_QUEUE_CAPACITY 128  // 큐 최대 크기
 

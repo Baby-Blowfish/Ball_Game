@@ -21,20 +21,3 @@ ScreenBall create_screen_ball(int id, int width, int height, int radius) {
 }
 
 
-void move_screen_ball(ScreenBall* b, int width, int height) {
-    b->x += b->dx;
-    b->y += b->dy;
-
-    // 좌우 벽에 닿으면 방향 반전
-    if (b->x <= b->radius || b->x >= (width - b->radius)) {
-        b->dx *= -1;
-        b->x += b->dx; // 튕긴 뒤 한 칸 이동해줌
-    }
-
-    // 상하 벽에 닿으면 방향 반전
-    if (b->y <= b->radius || b->y >= (height - b->radius)) {
-        b->dy *= -1;
-        b->y += b->dy;
-    }
-}
-

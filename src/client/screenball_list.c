@@ -30,17 +30,8 @@ BallListNode* appendBall(BallListNode* head, BallListNode** tail, ScreenBall bal
     *tail = newnode;
   }
 
-  printf(COLOR_GREEN "[Success] '%d' added successfully." COLOR_RESET, ball.id);
   return head;
 
-}
-
-void moveBallList(BallListNode* head, int width, int height) {
-    BallListNode* cur = head;
-    while (cur != NULL) {
-        move_screen_ball(&cur->data, width, height);
-        cur = cur->next;
-    }
 }
 
 
@@ -70,32 +61,19 @@ BallListNode* deleteLastBall(BallListNode** head, BallListNode** tail) {
     return NULL;
 }
 
-void speedUpBalls(BallListNode* head) {
-    BallListNode* cur = head;
-    while (cur != NULL) {
-        cur->data.dx *= 2;
-        cur->data.dy *= 2;
-        cur = cur->next;
+BallListNode* deep_copy_ball_list(BallListNode* head) {
+    BallListNode* new_head = NULL;
+    BallListNode* new_tail = NULL;
+
+    BallListNode* current = head;
+    while (current) {
+        new_head = appendBall(new_head, &new_tail, current->data);
+        current = current->next;
     }
+
+    return new_head;
 }
 
-void slowDownBalls(BallListNode* head) {
-    BallListNode* cur = head;
-    while (cur != NULL) {
-        // 속도가 1보다 작아지면 멈추기 때문에 최소 1 유지
-        if (cur->data.dx > 0)
-            cur->data.dx = (cur->data.dx > 1) ? cur->data.dx / 2 : 1;
-        else if (cur->data.dx < 0)
-            cur->data.dx = (cur->data.dx < -1) ? cur->data.dx / 2 : -1;
-
-        if (cur->data.dy > 0)
-            cur->data.dy = (cur->data.dy > 1) ? cur->data.dy / 2 : 1;
-        else if (cur->data.dy < 0)
-            cur->data.dy = (cur->data.dy < -1) ? cur->data.dy / 2 : -1;
-
-        cur = cur->next;
-    }
-}
 
 void freeBallList(BallListNode** head) {
     BallListNode* cur = *head;
