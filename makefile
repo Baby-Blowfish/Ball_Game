@@ -1,6 +1,7 @@
 # ===== 기본 설정 =====
 CC      = gcc
-CFLAGS  = -Wall -Wextra -g -Iinclude -MMD -MP -pthread
+CFLAGS  = -Wall -Wextra -g -MMD -MP -pthread \
+					-Iinclude/client -Iinclude/server -Iinclude/shared
 LDFLAGS = -lpthread
 
 SRC_DIR_SHARED  = src/shared

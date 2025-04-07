@@ -14,7 +14,7 @@ volatile sig_atomic_t keep_running = 1;
 
 SharedContext* manager_init() {
     // 로그 파일 초기화 (파일 내용 지우기)
-    FILE* log_file = fopen("ball_operations.log", "w");
+    FILE* log_file = fopen("logs/ball_operations.log", "w");
     if (log_file) {
         fprintf(log_file, "=== Ball Operations Log (Started at %s) ===\n", 
                 __DATE__ " " __TIME__);
@@ -132,11 +132,18 @@ void log_client_disconnect(int fd, const char* reason) {
 // 공 생성/삭제 이벤트 로깅 함수
 void log_ball_memory_usage(const char* action, int fd, int count) {
     size_t mem = sizeof(BallListNode) * count;
-    char details[100];
-    snprintf(details, sizeof(details), "Memory: %zu bytes", 
-             mem);
     
-    log_event(LOG_INFO, action, fd, count, details);
+    // 콘솔에 출력
+    printf(COLOR_GREEN "[Log] Client FD: %d, Action: %s, Count: %d, Memory: %zu bytes\n" COLOR_RESET,
+           fd, action, count, mem);
+    
+    // 파일에 로그 기록 (파일 내용 지우고 새로 열기)
+    FILE* log_file = fopen("../logs/ball_operations.log", "w");
+    if (log_file) {
+        fprintf(log_file, "[Log] Client FD: %d, Action: %s, Count: %d, Memory: %zu bytes\n",
+                fd, action, count, mem);
+        fclose(log_file);
+    }
 }
 // Worker thread 루프
 void* worker_thread(void* arg) {
