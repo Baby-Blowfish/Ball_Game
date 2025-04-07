@@ -64,7 +64,7 @@ void* render_thread(void* arg) {
         BallListNode* local_copy = deep_copy_ball_list(ctx->ball_list_manager->head);
         fb_fillScr(ctx->framebuffer, 0, 0, 0);
         draw_ball_list(ctx->framebuffer, local_copy); // 복사된 리스트 출력
-        // draw_command_guide(ctx->framebuffer);
+        draw_command_guide(ctx->framebuffer);
         pthread_mutex_unlock(&ctx->ball_list_manager->mutex_ball);
 
         // 복사한 리스트 해제
