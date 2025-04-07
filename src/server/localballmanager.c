@@ -1,5 +1,8 @@
 #include "localballmanager.h"
 
+// 로깅 함수 선언
+extern void log_ball_memory_usage(const char* action, int fd, int count);
+
 void ball_manager_init(BallListManager* manager) {
 
     memset(manager, 0,sizeof(BallListManager));

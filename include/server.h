@@ -11,6 +11,7 @@
 #include "localballmanager.h"
 #include "client_list_manager.h"
 #include "task.h"
+#include "log.h"
 
 #define SERVER_PORT 5100
 #define NUM_WORKERS 4
@@ -42,9 +43,16 @@ char parseCommand(const char* cmdStr, int* ball_count, int* radius);
 // 공 리스트를 문자열로 직렬화하여 모든 클라이언트에 전송
 void broadcast_ball_state(ClientListManager* client_mgr, BallListManager* ball_mgr);
 
+void log_client_connect(int fd, struct sockaddr_in* cliaddr);
+
+void log_client_disconnect(int fd, const char* reason);
+
+void log_ball_memory_usage(const char* action, int fd, int count);
+
 void* worker_thread(void* arg);
 
 void* cycle_broadcast_ball_state(void* arg);
+
 
 
 #endif

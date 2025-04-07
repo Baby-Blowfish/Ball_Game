@@ -123,8 +123,7 @@ int main(void)
                     pthread_mutex_lock(&arg->client_list_manager->mutex_client);
                     arg->client_list_manager->client_count++;
                     pthread_mutex_unlock(&arg->client_list_manager->mutex_client);
-
-                    printf(COLOR_CYAN "[Server] Client connected (fd=%d)" COLOR_RESET, csock);
+                    log_client_connect(csock, &cliaddr);    
                 }
             } else if (events[i].events & EPOLLIN) {
                 char buf[BUFSIZ];

@@ -4,7 +4,24 @@
 TaskQueue* global_task_queue = NULL;
 volatile sig_atomic_t keep_running = 1;
 
+/**
+ * @brief 공 생성/삭제 이벤트를 로깅하는 함수
+ * 
+ * @param action "생성" 또는 "삭제"와 같은 액션 설명
+ * @param fd 클라이언트 소켓 파일 디스크립터
+ * @param count 생성/삭제된 공의 개수
+ */
+
 SharedContext* manager_init() {
+    // 로그 파일 초기화 (파일 내용 지우기)
+    FILE* log_file = fopen("ball_operations.log", "w");
+    if (log_file) {
+        fprintf(log_file, "=== Ball Operations Log (Started at %s) ===\n", 
+                __DATE__ " " __TIME__);
+        fclose(log_file);
+        printf(COLOR_GREEN "[Log] Log file initialized." COLOR_RESET);
+    }
+
     SharedContext* arg = malloc(sizeof(SharedContext));
     if (!arg) {
         perror("malloc() : SharedContext");
@@ -95,6 +112,32 @@ void broadcast_ball_state(ClientListManager* client_mgr, BallListManager* ball_m
     free(buffer);
 }
 
+
+void log_client_connect(int fd, struct sockaddr_in* cliaddr) {
+    char ip[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(cliaddr->sin_addr), ip, INET_ADDRSTRLEN);
+    int port = ntohs(cliaddr->sin_port);
+    char details[100];
+    snprintf(details, sizeof(details), "IP: %s, Port: %d", ip, port);
+    log_event(LOG_INFO, "New client connected", fd, 0, details);
+}
+
+// 클라이언트 연결 종료 로깅 함수
+void log_client_disconnect(int fd, const char* reason) {
+    char details[100];
+    snprintf(details, sizeof(details), "Reason: %s", reason);
+    log_event(LOG_INFO, "Client disconnected", fd, 0, details);
+}
+
+// 공 생성/삭제 이벤트 로깅 함수
+void log_ball_memory_usage(const char* action, int fd, int count) {
+    size_t mem = sizeof(BallListNode) * count;
+    char details[100];
+    snprintf(details, sizeof(details), "Memory: %zu bytes", 
+             mem);
+    
+    log_event(LOG_INFO, action, fd, count, details);
+}
 // Worker thread 루프
 void* worker_thread(void* arg) {
 
@@ -121,6 +164,7 @@ void* worker_thread(void* arg) {
         {
             // 클라이언트 종료 처리
             printf(COLOR_YELLOW "[Server] Client requested disconnect (fd=%d)" COLOR_RESET, task.fd);
+            log_client_disconnect(task.fd, "Client requested disconnect");
 
             pthread_mutex_lock(&ctx->client_list_manager->mutex_client);
             ClientNode* removed = remove_client_by_socket(task.fd, &ctx->client_list_manager->head, &ctx->client_list_manager->tail);
@@ -145,6 +189,17 @@ void* worker_thread(void* arg) {
                 pthread_mutex_lock(&ctx->ball_list_manager->mutex_ball);
                 dispatch_command(cmd, count, radius, ctx->ball_list_manager);
                 pthread_mutex_unlock(&ctx->ball_list_manager->mutex_ball);
+                
+                if(cmd == CMD_ADD)
+                {
+                    int log_count = (count <= 0) ? 1 : count;
+                    log_ball_memory_usage("ADD", task.fd, log_count);
+                }
+                else if(cmd == CMD_DEL)
+                {
+                    int log_count = (count <= 0) ? 1 : count;
+                    log_ball_memory_usage("DEL", task.fd, log_count);
+                }
                 break;
             default:
                 {
