@@ -14,47 +14,74 @@
 #include "console_color.h"
 
 /**
- * @brief RGB 색상 정보를 나타내는 구조체
+ * @brief Structure representing RGB color information
+ * @details This structure stores the red, green, and blue channel values
+ *          to represent a color in the RGB color space.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
  */
 typedef struct {
-    unsigned char r;  ///< Red 채널 (0 ~ 255)
-    unsigned char g;  ///< Green 채널 (0 ~ 255)
-    unsigned char b;  ///< Blue 채널 (0 ~ 255)
+    unsigned char r;  ///< Red channel value (0 ~ 255)
+    unsigned char g;  ///< Green channel value (0 ~ 255)
+    unsigned char b;  ///< Blue channel value (0 ~ 255)
 } RGBColor;
 
 
 /**
- * @brief 클라이언트 해상도 기준의 화면 출력용 공 구조체
- * 서버에서 받은 BallObject를 픽셀 단위로 변환한 결과
+ * @brief Structure representing a ball for screen display
+ * @details This structure represents a ball object that has been converted
+ *          from a logical coordinate system to pixel coordinates for display
+ *          on the client's screen.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
  */
 typedef struct {
-    int id;
-    int x, y;           ///< 실제 화면상 좌표 (픽셀)
-    int dx, dy;         ///< 화면 속도 
-    int radius;         ///< 반지름 (픽셀 기준)
-    RGBColor color;
+    int id;            ///< Unique identifier for the ball
+    int x, y;          ///< Screen coordinates in pixels
+    int dx, dy;        ///< Velocity components in pixels per frame
+    int radius;        ///< Radius in pixels
+    RGBColor color;    ///< Color information for the ball
 } ScreenBall;
 
 
 /**
- * @brief 단일 공(Ball) 객체를 나타내는 구조체 (서버 전용)
- * 논리 좌표계(0.0 ~ 1000.0) 기준
+ * @brief Structure representing a ball object (server-side)
+ * @details This structure represents a ball object in a logical coordinate system
+ *          (0.0 ~ 1000.0) used by the server for calculations and physics.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
  */
 typedef struct {
-    int id;
-    float x, y;         ///< 논리 중심 위치 (0.0 ~ 1000.0)
-    int dx, dy;         ///< 속도
-    int radius;         ///< 논리 반지름 (단위: 논리 좌표 기준)
-    RGBColor color;
+    int id;            ///< Unique identifier for the ball
+    float x, y;        ///< Logical center position (0.0 ~ 1000.0)
+    int dx, dy;        ///< Velocity components
+    int radius;        ///< Logical radius (in logical coordinate units)
+    RGBColor color;    ///< Color information for the ball
 } LogicalBall;
 
-// @brief Ball을 생성하는 함수
-// @param id Ball 고유 ID
-// @param radius 반지름
+/**
+ * @brief Creates a ball in the logical coordinate system
+ * @param id Unique identifier for the ball
+ * @param radius Radius of the ball
+ * @return A newly created LogicalBall object
+ * @details Creates a new ball with the specified ID and radius, initializes
+ *          its position to a random location within the logical coordinate space,
+ *          sets a random velocity, and assigns a random color.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
+ */
 LogicalBall create_logical_ball(int id, int radius);
 
-// @brief Ball을 이동시키는 함수 (논리좌표계 기준)
-// @param b 이동시킬 Ball (참조)
+/**
+ * @brief Moves a ball in the logical coordinate system
+ * @param b Pointer to the ball object to be moved
+ * @details Updates the ball's position by adding its velocity components to
+ *          its current position. If the ball reaches the boundaries of the
+ *          logical coordinate space, its velocity is reversed to create a
+ *          bouncing effect.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
+ */
 void move_logical_ball(LogicalBall *b);
 
 #endif // LOCAL_BALL_H

@@ -13,7 +13,7 @@ void task_queue_init(TaskQueue* q) {
 
 // 2. 작업 추가 (enqueue)
 // main thread (epoll 루프)에서 작업을 넣을 때 호출
-void enqueue_task(TaskQueue* q, Task task) {
+void task_queue_push(TaskQueue* q, Task task) {
     pthread_mutex_lock(&q->mutex);
 
     // 큐가 가득 찼으면 대기 (단순 구현: wait → 버퍼가 비면 signal 받음)
@@ -31,7 +31,7 @@ void enqueue_task(TaskQueue* q, Task task) {
 
 // 3. 작업 꺼내기 (dequeue)
 // worker thread가 작업을 받아 처리할 때 호출
-Task dequeue_task(TaskQueue* q) {
+Task task_queue_pop(TaskQueue* q) {
     pthread_mutex_lock(&q->mutex);
 
     // 큐가 비었으면 대기

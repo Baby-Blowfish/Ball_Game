@@ -16,43 +16,118 @@
 #define SERVER_PORT 5100
 #define NUM_WORKERS 4
 
-//sig_atomic_t 원자적으로 읽기/쓰기 보장
+// sig_atomic_t guarantees atomic read/write operations
 extern volatile sig_atomic_t keep_running;
 extern TaskQueue* global_task_queue;
+
 /**
- * @brief 게임 전체에서 공유되는 전역 상태 컨텍스트 구조체
- *
- * 여러 스레드에서 공통으로 접근하는 자원들(공 리스트, 클라이언트 리스트 등)을 포인터로 포함하고 있음.
- * 스레드들은 이 구조체 하나를 인자로 받아 각각 필요한 자원에 접근한다.
+ * @brief Global state context structure shared across the game
+ * @details Contains pointers to resources (ball list, client list, etc.) that are
+ *          accessed by multiple threads. Each thread receives this structure as an
+ *          argument to access the resources it needs.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
  */
 typedef struct {
-    BallListManager* ball_list_manager;     ///< 공 리스트 관리자
-    ClientListManager* client_list_manager; ///< 클라이언트 리스트 관리자
-    TaskQueue *task_queue;
-    int epoll_fd;
+    BallListManager* ball_list_manager;     ///< Ball list manager
+    ClientListManager* client_list_manager; ///< Client list manager
+    TaskQueue *task_queue;                  ///< Task queue for processing commands
+    int epoll_fd;                          ///< Epoll file descriptor for event handling
 } SharedContext;
 
-
-
-// 서버
+/**
+ * @brief Initializes the server manager
+ * @return Pointer to the newly created SharedContext
+ * @details Creates and initializes the shared context with ball list manager,
+ *          client list manager, task queue, and epoll file descriptor.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
+ */
 SharedContext* manager_init();
+
+/**
+ * @brief Destroys the server manager
+ * @param arg Pointer to the SharedContext to be destroyed
+ * @details Frees all resources used by the shared context, including
+ *          the ball list manager, client list manager, and task queue.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
+ */
 void manager_destroy(SharedContext* arg);
 
+/**
+ * @brief Parses a command string
+ * @param cmdStr Command string to parse
+ * @param ball_count Pointer to store the number of balls
+ * @param radius Pointer to store the radius of balls
+ * @return Command character (a, d, w, s, x)
+ * @details Extracts the command character and parameters from the command string.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
+ */
 char parseCommand(const char* cmdStr, int* ball_count, int* radius);
 
-// 공 리스트를 문자열로 직렬화하여 모든 클라이언트에 전송
+/**
+ * @brief Broadcasts the ball state to all clients
+ * @param client_mgr Pointer to the client list manager
+ * @param ball_mgr Pointer to the ball list manager
+ * @details Serializes the ball list into a string and sends it to all connected clients.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
+ */
 void broadcast_ball_state(ClientListManager* client_mgr, BallListManager* ball_mgr);
 
+/**
+ * @brief Logs a client connection event
+ * @param fd Client file descriptor
+ * @param cliaddr Client address information
+ * @details Records information about a new client connection.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
+ */
 void log_client_connect(int fd, struct sockaddr_in* cliaddr);
 
+/**
+ * @brief Logs a client disconnection event
+ * @param fd Client file descriptor
+ * @param reason Reason for disconnection
+ * @details Records information about a client disconnection.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
+ */
 void log_client_disconnect(int fd, const char* reason);
 
+/**
+ * @brief Logs ball memory usage
+ * @param action Action performed (ADD or DEL)
+ * @param fd Client file descriptor
+ * @param count Number of balls
+ * @details Records information about ball creation or deletion, including
+ *          memory usage calculations.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
+ */
 void log_ball_memory_usage(const char* action, int fd, int count);
 
+/**
+ * @brief Worker thread function
+ * @param arg Pointer to the SharedContext
+ * @return NULL
+ * @details Processes tasks from the task queue, handling commands and
+ *          updating ball states.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
+ */
 void* worker_thread(void* arg);
 
+/**
+ * @brief Ball state broadcast thread function
+ * @param arg Pointer to the SharedContext
+ * @return NULL
+ * @details Periodically broadcasts the current ball state to all clients.
+ * @date 2025-04-07
+ * @author Kim Hyo Jin
+ */
 void* cycle_broadcast_ball_state(void* arg);
-
-
 
 #endif

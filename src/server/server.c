@@ -132,19 +132,12 @@ void log_client_disconnect(int fd, const char* reason) {
 // 공 생성/삭제 이벤트 로깅 함수
 void log_ball_memory_usage(const char* action, int fd, int count) {
     size_t mem = sizeof(BallListNode) * count;
-    
-    // 콘솔에 출력
-    printf(COLOR_GREEN "[Log] Client FD: %d, Action: %s, Count: %d, Memory: %zu bytes\n" COLOR_RESET,
+    char details[100];
+    sprintf(details, "[Log] Client FD: %d, Action: %s, Count: %d, Memory: %zu bytes\n",
            fd, action, count, mem);
-    
-    // 파일에 로그 기록 (파일 내용 지우고 새로 열기)
-    FILE* log_file = fopen("../logs/ball_operations.log", "w");
-    if (log_file) {
-        fprintf(log_file, "[Log] Client FD: %d, Action: %s, Count: %d, Memory: %zu bytes\n",
-                fd, action, count, mem);
-        fclose(log_file);
-    }
+    log_event(LOG_INFO, "Ball memory usage", fd, count, details);
 }
+
 // Worker thread 루프
 void* worker_thread(void* arg) {
 
@@ -153,7 +146,7 @@ void* worker_thread(void* arg) {
 
     while (keep_running) {
 
-        Task task = dequeue_task(ctx->task_queue);
+        Task task = task_queue_pop(ctx->task_queue);
         task.data[task.length] = '\0'; // 수신한 데이터 null-terminate 보장
 
         printf(COLOR_BLUE "[Worker] Processing task from fd %d: %s" COLOR_RESET, task.fd, task.data);

@@ -5,7 +5,6 @@ SocketContext create_client(int csock, struct sockaddr_in cliaddr)
 {
     SocketContext s;
     s.csock = csock;
-    s.is_running = 1;
     s.cliaddr= cliaddr;
     return s;
 }
